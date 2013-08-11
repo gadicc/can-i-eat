@@ -1,0 +1,137 @@
+<head>
+  <title>can-i-eat.it</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div id="topDiv">
+		{{> browse}} &nbsp;
+		{{> search}} &nbsp;
+		Rules: &nbsp;
+	  <label>
+			<input type="checkbox" value="for" checked="checked">
+			<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>Vegan
+		</label>
+
+	  	<div id="topDivRight">
+			<img src="/favicon.ico">
+	  		<span>can-i-eat</span> |
+	  	{{loginButtons}}
+	  </div>
+	</div>
+
+	<div id="mainDiv">
+	  {{> products}}
+	  {{> app}}
+	  {{> actions}}
+	  {{> todo}}
+	  {{> modalStandard}}
+	  <!-- bisli bbq 7290000066165 -->
+	</div>
+</body>
+
+<template name="actions">
+  <a id="add-product">Add new Product</a>
+  {{> add-company}}
+</template>
+
+<template name="search">
+	Search: <input type="text" id="query" name="search">{{search}}</input>
+</template>
+<template name="browse">
+	Browse: <select><option value="snacks">snacks</option></select>
+</template>
+
+<template name="app">
+	<h3>Apps</h3>
+	<p>Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
+	product barcodes in the shop and see if you can eat it.</p>
+</template>
+
+<template name="products">
+	<div>
+		{{#each products}}
+		<div class="product caneat-{{caneat}}">
+			<img src="{{picURL}}">
+			<div class="status status-{{caneat}}"></div>
+
+			<p><span class="name">{{name}}</span> <a class="edit">edit</a></p>
+			<ul>
+			{{#each caneatMsg}}
+				{{#with this}}
+				<li>{{note}}
+					{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
+				</li>
+				{{/with}}
+			{{/each}}
+			</ul>
+		</div>
+		{{/each}}
+	</div>
+</template>
+
+<template name="todo">
+	<h3>Roadmap (if people use this):</h3>
+	<ol>
+		<li>Currently products are VEGAN or NON-VEGAN.  Add support for gluten, low-carb, diabetics, etc.</li>
+		<li style="text-decoration: line-through">Mobile app that can scan product barcodes and tell you instantly if you can eat it.</li>
+		<li>Allow upload of pictures instead of just using existing URLs</li>
+		<li>Multi language support, starting with עברית :)</li>
+	</ol>
+</template>
+
+<template name="add-product">
+	<form id="add-product">
+		<table class="editProduct" data-product-id="{{_id}}">
+		<tr><td>Name:</td><td><input type="text" id="add-product-name" value="{{name}}" /></td></tr>
+		<tr><td>Company:</td><td><input type="hidden" id="add-product-company" value="{{company}}" /><td></tr>
+		<tr><td>Categories:</td><td><input type="hidden" id="add-product-categories" value="{{categories}}" /><td></tr>
+		<tr><td>Barcode</td><td><input type="text" id="add-product-barcode" value="{{barcode}}" /><td></tr>
+		<tr><td>PicURL:</td><td><input type="text" id="add-product-picURL" value="{{picURL}}" <td></tr>
+		<tr><td>Ingredients:</td><td><input type="hidden" id="add-product-ingredients" value="{{ingredients}}"/><td></tr>
+		{{props}}
+		</table>
+	</form>
+</template>
+
+<template name="edit-product">
+	<form id="edit-product">
+		{{#with product}}
+		<table class="editProduct" data-product-id="{{_id}}">
+		<tr><td>Name:</td><td><span data-id="name">{{name}}</span></td></tr>
+		<tr><td>Company:</td><td><span data-type="select2" data-value="{{company}}" data-id="company"></span><td></tr>
+		<tr><td>Categories:</td><td><span data-type="select2" data-value="{{categories}}" data-id="categories"></span><td></tr>
+		<tr><td>Barcode</td><td><span data-id="barcode">{{barcode}}</span><td></tr>
+		<tr><td>PicURL:</td><td><span data-id="picURL">{{picURL}}</span><td></tr>
+		<tr><td>Ingredients:</td><td><span data-type="select2" data-value="{{ingredients}}" data-id="ingredients"></span><td></tr>
+		{{props}}
+		</table>
+		{{/with}}
+	</form>
+</template>
+
+<template name="add-company">
+	<h3>Add new Company</h3>
+	<form>
+		Name: <input type="text" id="add-company-name"></input>
+		<input type="submit" />
+	</form>
+</template>
+
+<template name="modalStandard">
+    <div class="modal hide fade" id="modalStandard">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>{{title}}</h3>
+        </div>
+        <div class="modal-body">
+            {{body}}
+        </div>
+        {{#constant}}
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+            <a href="#" class="btn btn-primary" data-dismiss="modal">Save changes</a>
+        </div>
+        {{/constant}}
+    </div>
+</template>

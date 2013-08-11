@@ -1,0 +1,27 @@
+{
+  "meteor": {},
+  "dependencies": {
+    "basePackages": {
+      "x-editable-bootstrap": {},
+      "select2": {},
+      "font-awesome": {}
+    },
+    "packages": {
+      "x-editable-bootstrap": {
+        "git": "https://github.com/nate-strauser/meteor-x-editable-bootstrap.git",
+        "tag": "v1.4.5b",
+        "commit": "1a5ac4258d69bffeb48035bc263d88c034871de5"
+      },
+      "select2": {
+        "git": "https://github.com/nate-strauser/meteor-select2.git",
+        "tag": "v3.4.0",
+        "commit": "a731bdb357cadd840aa5d9a3e893ab3df097a09c"
+      },
+      "font-awesome": {
+        "git": "https://github.com/nate-strauser/meteor-font-awesome.git",
+        "tag": "v3.2.0",
+        "commit": "2cba6f907a2579cae2d399b522f9544c13d5e091"
+      }
+    }
+  }
+}
