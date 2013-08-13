@@ -75,28 +75,32 @@
 
 <template name="products">
 	<div>
-		{{#if products}}
-			{{#each products}}
-			<div class="product caneat-{{caneat}}">
-				<img src="{{picURL}}">
-				<div class="status status-{{caneat}}"></div>
+		{{#if ready}}
+			{{#if products}}
+				{{#each products}}
+				<div class="product caneat-{{caneat}}">
+					<img src="{{picURL}}">
+					<div class="status status-{{caneat}}"></div>
 
-				<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
-				<ul>
-				{{#each caneatMsg}}
-					{{#with this}}
-					<li>
-						{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
-						{{note}}
-						{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
-					</li>
-					{{/with}}
+					<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
+					<ul>
+					{{#each caneatMsg}}
+						{{#with this}}
+						<li>
+							{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
+							{{note}}
+							{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
+						</li>
+						{{/with}}
+					{{/each}}
+					</ul>
+				</div>
 				{{/each}}
-				</ul>
-			</div>
-			{{/each}}
+			{{else}}
+				<p>No results.</p>
+			{{/if}}
 		{{else}}
-			<p>No results.</p>
+				<p>Loading...</p>
 		{{/if}}
 	</div>
 </template>
@@ -110,6 +114,7 @@
 			combinations (e.g. gluten-free vegan food without soya)</li>
 		<li>Subsets, e.g. VEGAN must be MILK-FREE, etc.  Cream can be marked as MILK, not vegan.</li>
 		<li>Allow upload of pictures instead of just using existing URLs</li>
+		<li>Crawling and Open Graph (Facebook preview) support
 		<li>REST endpoints for other apps to use the data.  Open source the website.</li>
 		<li>Ads, with 50% of proceeds going to animal charities</li>
 	</ol>

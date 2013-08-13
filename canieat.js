@@ -53,6 +53,12 @@ if (Meteor.isClient) {
     return Products.find(query, { sort: { name: 1 } }).fetch();
   }
 
+  Template.products.ready = function() {
+    return _.all(allSubs, function(sub) {
+      return sub.ready();
+    });
+  }
+
   Template.browse.rendered = _.once(function() {
     var browse = Session.get('QUERY_BROWSE');
     if (browse) $('#browseSelect').val(browse);
