@@ -68,7 +68,7 @@ if (Meteor.isClient) {
           return;
         $this.data('highlighted', $this.html());
         $this.html(
-          $this.html().replace(new RegExp('('+query+')'), '<span class="highlight">$1</span>')
+          $this.html().replace(new RegExp('('+query+')', 'i'), '<span class="highlight">$1</span>')
         );
       });
     }
@@ -314,8 +314,8 @@ if (Meteor.isClient) {
         Session.set('QUERY_TYPE', 'ALL');
       } else {
         Session.set('QUERY_TYPE', 'SEARCH');
-        Session.set('QUERY_SEARCH', query);
       }
+      Session.set('QUERY_SEARCH', query);
     }, 100)
   });
 
