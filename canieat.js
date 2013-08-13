@@ -231,11 +231,15 @@ if (Meteor.isClient) {
 
   function defaultCreateSearchChoice(term, data) {
     if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+      var x = $('#edit-product span[data-id="company"]').data('editable');
+      allCompanies.push({ id: term, text: term });
+      x.options.source = allCompanies;
       return { id: term, text: term };
     }
   }
 
   function addDocSuccess(collection, ids, self, mTpl) {
+    console.log('addDocSuccess');
     var name;
     var added = false;
     var source = $(self).data('editable').options.select2.data;
@@ -257,6 +261,38 @@ if (Meteor.isClient) {
     }
   }
 
+  /* this is a workaround, see old way commented out below.  old way worked perfect in development but not
+   * in deployment. */
+  function select2display(ids, source, collection, self) {
+    var id, doc, html = [], changed = false, $this = $(self);
+
+    if (!_.isArray(ids))
+      ids = [ids];
+
+    for (var i=0; i < ids.length; i++) {
+      doc = collection.findOne(ids[i]);
+      if (doc) {
+        html.push(doc.name);
+      } else {
+        doc = collection.findOne({name: ids[i]});
+        if (doc) {
+          html.push(doc.name);
+          ids[i] = doc._id;
+          changed = true;
+        } else {
+          id = collection.insert({name: ids[i]});
+          html.push(ids[i]);
+          ids[i] = id;
+          changed = true;          
+        }
+      }     
+    }
+
+    $this.html(html.join(','));
+    if (changed)
+      $this.data('value', ids.join(','));
+  }
+
   Template.products.events({
     'click a.edit': function(event) {
       var mTpl = Template['edit-product'];
@@ -265,22 +301,30 @@ if (Meteor.isClient) {
 
       modal({title: 'Edit Product',
         body: new Handlebars.SafeString(mTpl()) });
+      console.log('loaded');
 
       $('#edit-product span[data-id="company"]').editable({
-        source: allCompanies,
+        source: allCompanies, display: function(ids, source) { select2display(ids, source, Companies, this) },
         select2: { createSearchChoice: defaultCreateSearchChoice },
-        success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
+        success: editableSuccessTpl
       });
       $('#edit-product span[data-id="categories"]').editable({
-        source: allCategories, select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
+        source: allCategories, display: function(ids, source) { select2display(ids, source, Categories, this) },
+        select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
+        success: editableSuccessTpl
+        /*
         success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
+        */
       });
       $('#edit-product span[data-id="ingredients"]').editable({
-        source: allIngredients, mode: 'inline',
         select2: {
             width: '400px', multiple: true,
             createSearchChoice: defaultCreateSearchChoice },
+        source: allIngredients, mode: 'inline', success: editableSuccessTpl,
+        display: function(ids, source) { select2display(ids, source, Ingredients, this) },
+        /*
         success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
+        */
       });
       $('#edit-product span[data-id="status"]').editable({
         source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
