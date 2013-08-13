@@ -22,8 +22,9 @@
 
 	<div id="mainDiv">
 	  {{> products}}
-	  {{> app}}
+	  <br />
 	  {{> actions}}
+	  {{> app}}
 	  {{> todo}}
 	  {{> modalStandard}}
 	  <!-- bisli bbq 7290000066165 -->
@@ -31,8 +32,11 @@
 </body>
 
 <template name="actions">
-  <a id="add-product">Add new Product</a>
-  {{> add-company}}
+	{{#if currentUser}}
+  	<p><a id="add-product">Add new Product</a></p>
+  {{else}}
+  	<p>Log in to add/edit products</p>
+  {{/if}}
 </template>
 
 <template name="search">
@@ -73,14 +77,20 @@
 <template name="todo">
 	<h3>Roadmap (if people use this):</h3>
 	<ol>
-		<li>Currently products are VEGAN or NON-VEGAN.  Add support for gluten, low-carb, diabetics, etc.</li>
+		<li>Multi language support, starting with עברית :)  PLEASE ONLY ADD CONTENT IN ENGLISH (for now).</li>
 		<li style="text-decoration: line-through">Mobile app that can scan product barcodes and tell you instantly if you can eat it.</li>
+		<li>Currently products are VEGAN or NON-VEGAN.  Add support for gluten, low-carb, diabetics, etc, including
+			combinations (e.g. gluten-free vegan food without soya)</li>
 		<li>Allow upload of pictures instead of just using existing URLs</li>
-		<li>Multi language support, starting with עברית :)</li>
+		<li>REST endpoints for other apps to use the data.  Open source the website.</li>
+		<li>Ads, with 50% of proceeds going to animal charities</li>
 	</ol>
 </template>
 
 <template name="add-product">
+	<p>Try searching on <a href="http://foodmarket.co.il/" target="_blank">foodmarket</a> and 
+		<a href="http://www.foodsdictionary.co.il/" target="_blank">foodsdictionary</a> for picture, barcode,
+		and nutrional information.</p>
 	<form id="add-product">
 		<table class="editProduct" data-product-id="{{_id}}">
 		<tr><td>Name:</td><td><input type="text" id="add-product-name" value="{{name}}" /></td></tr>
@@ -95,6 +105,9 @@
 </template>
 
 <template name="edit-product">
+	<p>Try searching on <a href="http://foodmarket.co.il/" target="_blank">foodmarket</a> and 
+		<a href="http://www.foodsdictionary.co.il/" target="_blank">foodsdictionary</a> for picture, barcode,
+		and nutrional information.</p>
 	<form id="edit-product">
 		{{#with product}}
 		<table class="editProduct" data-product-id="{{_id}}">
@@ -104,6 +117,8 @@
 		<tr><td>Barcode</td><td><span data-id="barcode">{{barcode}}</span><td></tr>
 		<tr><td>PicURL:</td><td><span data-id="picURL">{{picURL}}</span><td></tr>
 		<tr><td>Ingredients:</td><td><span data-type="select2" data-value="{{ingredients}}" data-id="ingredients"></span><td></tr>
+		<tr><td><br /><b><u>Exceptions</u></b></td>
+			<td><br />Only use the below to override the ingredients (e.g. E631 definitely vegan).</td></tr>
 		{{props}}
 		</table>
 		{{/with}}

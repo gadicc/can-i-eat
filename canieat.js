@@ -9,8 +9,15 @@ rules:
 if (Meteor.isClient) {
 
   Meteor.startup(function() {
+    var path;
     if (location.pathname.length > 1) {
-      $('#query').val(location.pathname.substr(1));
+      path = location.pathname.substr(1);
+      if (path.substr(0,4) == 'upc/')
+        console.log('upc');
+      else if (path.substr(0,7) == 'browse/')
+        console.log('browse');
+      else
+        $('#query').val(path);
     }
   });
 
@@ -44,7 +51,7 @@ if (Meteor.isClient) {
         case 'no': caneat='no'; break;
       }
 
-    console.log(caneat);
+//    console.log(caneat);
     return caneat;
   }
   Template.products.caneatMsg = function() {
@@ -71,7 +78,7 @@ if (Meteor.isClient) {
           break;
       }
 
-    console.log(out);
+//    console.log(out);
     return out;
   }
 
@@ -85,9 +92,9 @@ if (Meteor.isClient) {
         body: new Handlebars.SafeString(mTpl()) });
 
       var el, select2s = {
-        '#add-product-company': { data: allCompanies },
-        '#add-product-ingredients': { tags: allIngredients },
-        '#add-product-categories': { tags: allCategories }
+        '#add-product-company': { data: allCompanies, multiple: false, createSearchChoice: defaultCreateSearchChoice },
+        '#add-product-ingredients': { data: allIngredients, multiple: true, createSearchChoice: defaultCreateSearchChoice },
+        '#add-product-categories': { data: allCategories, multiple: true, createSearchChoice: defaultCreateSearchChoice }
       }
       for (elId in select2s) {
         el = $(elId);
@@ -100,38 +107,67 @@ if (Meteor.isClient) {
         mTpl.product.update({
           name: $('#add-product-name').val(),
           company: $('#add-product-company').val(),
-          categories: $('#add-product-categories').val(),
+          categories: $('#add-product-categories').val().split(','),
           barcode: $('#add-product-barcode').val(),
-          ingredients: $('#add-product-ingredients').val(),
+          ingredients: $('#add-product-ingredients').val().split(','),
           picURL: $('#add-product-picURL').val()
         });
         console.log(mTpl.product);
-        //mTpl.product.save();
+        mTpl.product.save();
       });
     }
   });
 
+  function defaultCreateSearchChoice(term, data) {
+    if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
+      return { id: term, text: term };
+    }
+  }
+
+  function addDocSuccess(collection, ids, self, mTpl) {
+    var name;
+    var added = false;
+    var source = $(self).data('editable').options.select2.data;
+    if (!_.isArray(ids))
+      ids = [ids];
+
+    for (var i=0, id = ids[0]; i < ids.length; id = ids[++i]) {
+      if (collection.find(id).count() == 0) {
+        name = id; id = collection.insert({name: name});
+        source.push({ id: id, text: name });
+        added = true; ids[i] = id;
+      }
+    }
+
+    editableSuccess(mTpl, null, ids, self);
+    if (added) {
+      console.log({ newValue: ids });
+      return { newValue: ids };
+    }
+  }
 
   Template.products.events({
     'click a.edit': function(event) {
       var mTpl = Template['edit-product'];
       var editableSuccessTpl = _.partial(editableSuccess, mTpl);
       mTpl.product = new Product(this._id);
-      console.log(this._id);
-      console.log(mTpl.product);
 
       modal({title: 'Edit Product',
         body: new Handlebars.SafeString(mTpl()) });
 
       $('#edit-product span[data-id="company"]').editable({
-        source: allCompanies, success: editableSuccessTpl
+        source: allCompanies,
+        select2: { createSearchChoice: defaultCreateSearchChoice },
+        success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="ingredients"]').editable({
-        mode: 'inline', success: editableSuccessTpl,
-        select2: { tags: allIngredients, width: '400px' }
+        source: allIngredients, mode: 'inline',
+        select2: { width: '400px', multiple: true, createSearchChoice: defaultCreateSearchChoice },
+        success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="categories"]').editable({
-        select2: { tags: allCategories }, success: editableSuccessTpl
+        source: allCategories, select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
+        success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="status"]').editable({
         source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
@@ -141,15 +177,15 @@ if (Meteor.isClient) {
       $('#edit-product span').editable({ success: editableSuccessTpl });
 
       $('#modalStandard .btn-primary').click(function() {
-          console.log(mTpl.product);
           mTpl.product.save();
       });
     }
   });
 
 
-  function editableSuccess(mTpl, response, newValue) {
-    var $this = $(this), propName = $this.data('id');
+  function editableSuccess(mTpl, response, newValue, self) {
+    if (!self) self = this;
+    var $this = $(self), propName = $this.data('id');
 
     // props.vegan.note, etc.
     if ($this.hasClass('prop'))
@@ -168,23 +204,21 @@ if (Meteor.isClient) {
     return Companies.find().fetch();
   }
 
-  allIngredients = null;
-  Deps.autorun(function() {
-    var out = [], ings = Ingredients.find().fetch();
-    _.each(ings, function(ing) {
-      out.push( { id: ing._id, text: ing.name });
-    });
-    allIngredients = out;
-  });
-
-  allCompanies = null;
-  Deps.autorun(function() {
-    var out = [], cs = Companies.find().fetch();
-    _.each(cs, function(company) {
-      out.push( { id: company._id, text: company.name });
-    });
-    allCompanies = out;
-  });
+  var alls = {
+    allIngredients: { collection: Ingredients },
+    allCompanies: { collection: Companies },
+    allCategories: { collection: Categories }
+  }
+  for (key in alls) {
+    window[key] = null;
+    Deps.autorun(function() {
+      var out = [], items = alls[key].collection.find().fetch();
+      _.each(items, function(item) {
+        out.push( { id: item._id, text: item.name });
+      });
+      window[key] = out;
+    })
+  }
 
   Template['add-company'].events({
     'submit': function(event) {
