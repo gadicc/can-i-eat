@@ -1,0 +1,8 @@
+#ingredients tr { border-bottom: 1px solid white; border-top: 1px solid white; }
+#ingredients td { background: #dfdfdf; padding: 3px 10px 3px 10px; text-align: center; }
+
+#ingredients td:first-child { text-align: right; }
+#ingredients th:first-child { text-align: right; }
+
+#ingredients th { background: #555; color: white; }
+#ingredients span[title] { border-bottom: 1px black dotted; }

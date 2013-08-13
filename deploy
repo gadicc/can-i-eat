@@ -1,0 +1,10 @@
+#!/bin/sh
+find . -type f \( ! -regex '.*/\..*' \) | xargs wc -l | grep total
+
+OUTPUT_DIR=~/tmp/demeteorized
+rm -rf $OUTPUT_DIR
+demeteorizer -n v0.8.14 -o $OUTPUT_DIR
+cd $OUTPUT_DIR
+npm install
+npm shrinkwrap
+af update "can-i-eat"

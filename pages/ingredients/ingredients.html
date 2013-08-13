@@ -1,0 +1,28 @@
+
+<template name="ingredients">
+	<table id="ingredients">
+			<tr>
+				<th>Name</th>
+				<th>Vegan</th>
+			</tr>
+		{{#each ingredients}}
+			<tr>
+				<td><a class="edit">{{name}}</a></td>
+				{{props}}
+			</tr>
+		{{/each}}
+	</table>
+</template>
+
+<template name="edit-ingredient">
+	<form id="edit-ingredient">
+		{{#with ingredient}}
+		<table class="editProduct" data-product-id="{{_id}}">
+			<tr><td>Name:</td><td><span data-id="name">{{name}}</span></td></tr>
+			<tr><td><br /><b><u>Rules</u></b></td>
+				<td><br /></td></tr>
+			{{props}}
+		</table>
+		{{/with}}
+	</form>
+</template>

@@ -9,7 +9,7 @@
 		{{> search}} &nbsp;
 		Rules: &nbsp;
 	  <label>
-			<input type="checkbox" value="for" checked="checked">
+			<input type="checkbox" value="for" checked="checked" disabled>
 			<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>Vegan
 		</label>
 
@@ -21,19 +21,26 @@
 	</div>
 
 	<div id="mainDiv">
-	  {{> products}}
+		{{renderPage}}
+	  {{> modalStandard}}
+	</div>
+</body>
+
+<template name="main">
+		{{> products}}
 	  <br />
 	  {{> actions}}
 	  {{> app}}
 	  {{> todo}}
-	  {{> modalStandard}}
 	  <!-- bisli bbq 7290000066165 -->
-	</div>
-</body>
+</template>
 
 <template name="actions">
 	{{#if currentUser}}
-  	<p><a id="add-product">Add new Product</a></p>
+  	<p>
+  		<a id="add-product">Add new Product</a> |
+  		<a href="/ingredients">Edit Ingredients</a>
+  	</p>
   {{else}}
   	<p>Log in to add/edit products</p>
   {{/if}}
@@ -59,11 +66,13 @@
 			<img src="{{picURL}}">
 			<div class="status status-{{caneat}}"></div>
 
-			<p><span class="name">{{name}}</span> <a class="edit">edit</a></p>
+			<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
 			<ul>
 			{{#each caneatMsg}}
 				{{#with this}}
-				<li>{{note}}
+				<li>
+					{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
+					{{note}}
 					{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
 				</li>
 				{{/with}}
@@ -81,6 +90,7 @@
 		<li style="text-decoration: line-through">Mobile app that can scan product barcodes and tell you instantly if you can eat it.</li>
 		<li>Currently products are VEGAN or NON-VEGAN.  Add support for gluten, low-carb, diabetics, etc, including
 			combinations (e.g. gluten-free vegan food without soya)</li>
+		<li>Subsets, e.g. VEGAN must be MILK-FREE, etc.  Cream can be marked as MILK, not vegan.</li>
 		<li>Allow upload of pictures instead of just using existing URLs</li>
 		<li>REST endpoints for other apps to use the data.  Open source the website.</li>
 		<li>Ads, with 50% of proceeds going to animal charities</li>
@@ -122,14 +132,6 @@
 		{{props}}
 		</table>
 		{{/with}}
-	</form>
-</template>
-
-<template name="add-company">
-	<h3>Add new Company</h3>
-	<form>
-		Name: <input type="text" id="add-company-name"></input>
-		<input type="submit" />
 	</form>
 </template>
 

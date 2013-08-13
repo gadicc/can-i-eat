@@ -6,6 +6,8 @@ rules:
 
 */
 
+// TODO, check where user input is used unescaped
+
 if (Meteor.isClient) {
 
   Meteor.startup(function() {
@@ -25,58 +27,106 @@ if (Meteor.isClient) {
     return Products.find({}, { sort: { name: 1 } }).fetch();
   }
 
-
-  Template['edit-product'].props = function() {
-    var out = '';
-    for (var i = 0; i < props.length; i++) {
-      var prop = props[i];
-      var propObj = this.props && this.props[prop] ? this.props[prop] : {};
-      out += '<tr data-prop="'+ prop +'"><td>' + prop.substr(0,1).toUpperCase() + prop.substr(1) + ':</td><td>'
-        + '<span class="prop" data-type="select2" data-value="' + propObj.status + '" data-id="status"></span>'
-        + ' { Note: <span class="prop" data-id="note" data-value="' + propObj.note + '"></span>,'
-        + ' Source: <span class="prop" data-id="source" data-value="' + propObj.source + '"></span> }<td></tr>\n';
-    }
-    return new Handlebars.SafeString(out);
-  }
+  Template['edit-product'].props = templateProps;
 
   Template.products.caneat = function() {
     var caneat = null;
+    var excludes = [];
 
-    if (this.props)
-    for (var i=0; i < props.length; i++)
-      if (this.props[props[i]])
-      switch (this.props[props[i]].status) {
-        case 'yes': if (caneat != 'no' || caneat != 'maybe') caneat='yes'; break;
-        case 'maybe': if (caneat != 'no') caneat='maybe'; break;
-        case 'no': caneat='no'; break;
+    // 1st priority: the product itself
+    if (this.props) {
+      for (var i=0; i < props.length; i++)
+        if (this.props[props[i]] && this.props[props[i]].status) {
+          excludes.push(props[i]);
+          switch (this.props[props[i]].status) {
+            case 'yes': if (caneat != 'no' || caneat != 'maybe') caneat='yes'; break;
+            case 'maybe': if (caneat != 'no') caneat='maybe'; break;
+            case 'no': caneat='no'; break;
+          }
+        }
+    }
+
+    // 2nd priority: the company
+
+    // 3rd priority: ingredients
+    var ingredient;
+    if (this.ingredients)
+    for (var j=0; j < this.ingredients.length; j++) {
+      ingredient = new Ingredient(this.ingredients[j]);
+      for (var i=0; i < props.length; i++) {
+        if (excludes.indexOf(props[i]) != -1)
+          continue;
+        if (ingredient.props[props[i]])
+        switch (ingredient.props[props[i]].status) {
+          case 'yes': if (caneat != 'no' || caneat != 'maybe') caneat='yes'; break;
+          case 'maybe': if (caneat != 'no') caneat='maybe'; break;
+          case 'no': caneat='no'; break;
+        }
       }
+    }
 
-//    console.log(caneat);
     return caneat;
   }
   Template.products.caneatMsg = function() {
     var caneat = null, out = [];
+    var excludes = [];
 
     if (this.props)
     for (var i=0; i < props.length; i++)
-      if (this.props[props[i]])
-      switch (this.props[props[i]].status) {
-        case 'yes':
-          if (caneat != 'no' || caneat != 'maybe') {
-            caneat='yes'; 
-            out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
-          }
-          break;
-        case 'maybe':
-          if (caneat != 'no') {
-            caneat='maybe';
-            out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
-          }
-          break;
-        case 'no': caneat='no';
+      if (this.props[props[i]] && this.props[props[i]].status) {
+        excludes.push(props[i]);
+        switch (this.props[props[i]].status) {
+          case 'yes':
+            if (caneat != 'no' || caneat != 'maybe') {
+              caneat='yes'; 
               out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
-          break;
+            }
+            break;
+          case 'maybe':
+            if (caneat != 'no') {
+              caneat='maybe';
+              out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
+            }
+            break;
+          case 'no':
+            caneat='no';
+            out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
+            break;
+        }
       }
+
+    // 3rd priority: ingredients
+    var ingredient, text;
+    if (this.ingredients) {
+      text = '';
+      for (var j=0; j < this.ingredients.length; j++) {
+        ingredient = new Ingredient(this.ingredients[j]);
+        for (var i=0; i < props.length; i++) {
+          if (excludes.indexOf(props[i]) != -1)
+          continue;
+
+          if (ingredient.props[props[i]])
+          switch (ingredient.props[props[i]].status) {
+            case 'yes':
+              if (caneat != 'no' || caneat != 'maybe') {
+                caneat='yes';
+                out.push({name: ingredient.name, note: ingredient.props[props[i]].note, source: ingredient.props[props[i]].source });
+              }
+              break;
+            case 'maybe':
+              if (caneat != 'no') {
+                caneat='maybe';
+                out.push({name: ingredient.name, note: ingredient.props[props[i]].note, source: ingredient.props[props[i]].source });                
+              }
+              break;
+            case 'no':
+              caneat='no';
+              out.push({name: ingredient.name, note: ingredient.props[props[i]].note, source: ingredient.props[props[i]].source });
+              break;
+          }          
+        }
+      }
+    }
 
 //    console.log(out);
     return out;
@@ -139,7 +189,7 @@ if (Meteor.isClient) {
       }
     }
 
-    editableSuccess(mTpl, null, ids, self);
+    editableSuccess(mTpl.product, null, ids, self);
     if (added) {
       console.log({ newValue: ids });
       return { newValue: ids };
@@ -149,8 +199,8 @@ if (Meteor.isClient) {
   Template.products.events({
     'click a.edit': function(event) {
       var mTpl = Template['edit-product'];
-      var editableSuccessTpl = _.partial(editableSuccess, mTpl);
       mTpl.product = new Product(this._id);
+      var editableSuccessTpl = _.partial(editableSuccess, mTpl.product);
 
       modal({title: 'Edit Product',
         body: new Handlebars.SafeString(mTpl()) });
@@ -183,7 +233,7 @@ if (Meteor.isClient) {
   });
 
 
-  function editableSuccess(mTpl, response, newValue, self) {
+  editableSuccess = function(item, response, newValue, self) {
     if (!self) self = this;
     var $this = $(self), propName = $this.data('id');
 
@@ -191,7 +241,7 @@ if (Meteor.isClient) {
     if ($this.hasClass('prop'))
       propName = 'props.' + $this.parents('[data-prop]').data('prop') + '.' + propName;
 
-    mTpl.product.update(propName, newValue);
+    item.update(propName, newValue);
   }
 
   Template.search.events({
@@ -220,16 +270,6 @@ if (Meteor.isClient) {
     })
   }
 
-  Template['add-company'].events({
-    'submit': function(event) {
-      event.preventDefault();
-      var name = $('#add-company-name');
-      companies.insert({name: name.val()});
-      name.val('');
-      return false;
-    }
-  });
-
   modal = function(context, id) {
       if (!id) id = 'modalStandard';
       $('#' + id).replaceWith(Template[id](context));
@@ -241,5 +281,11 @@ if (Meteor.isClient) {
           }
       });
   }
+
+  Meteor.Router.add({
+    '/ingredients': 'ingredients',
+    '*': 'main'
+  });
 }
+
 
