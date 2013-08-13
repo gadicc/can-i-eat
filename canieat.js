@@ -59,6 +59,21 @@ if (Meteor.isClient) {
     });
   }
 
+  Template.products.rendered = function() {
+    var query = Session.get('QUERY_SEARCH');
+    if (query.length > 0) {
+      $('#productsDiv .name').each(function() {
+        var $this = $(this), html;
+        if ($this.data('highlighted'))
+          return;
+        $this.data('highlighted', $this.html());
+        $this.html(
+          $this.html().replace(new RegExp('('+query+')'), '<span class="highlight">$1</span>')
+        );
+      });
+    }
+  }
+
   Template.browse.rendered = _.once(function() {
     var browse = Session.get('QUERY_BROWSE');
     if (browse) $('#browseSelect').val(browse);

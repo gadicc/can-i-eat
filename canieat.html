@@ -74,7 +74,7 @@
 </template>
 
 <template name="products">
-	<div>
+	<div id="productsDiv">
 		{{#if ready}}
 			{{#if products}}
 				{{#each products}}
@@ -115,6 +115,7 @@
 		<li>Subsets, e.g. VEGAN must be MILK-FREE, etc.  Cream can be marked as MILK, not vegan.</li>
 		<li>Allow upload of pictures instead of just using existing URLs</li>
 		<li>Crawling and Open Graph (Facebook preview) support
+		<li>Offline support (will make app much faster too)</li>
 		<li>REST endpoints for other apps to use the data.  Open source the website.</li>
 		<li>Ads, with 50% of proceeds going to animal charities</li>
 	</ol>
