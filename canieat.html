@@ -70,7 +70,8 @@
 <template name="app">
 	<h3>Apps</h3>
 	<p>Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
-	product barcodes in the shop and see if you can eat it.</p>
+	product barcodes in the shop and see if you can eat it. Demo:</p>
+	<iframe width="420" height="315" src="//www.youtube.com/embed/pM_yGG18u6I" frameborder="0" allowfullscreen></iframe>
 </template>
 
 <template name="products">
@@ -79,7 +80,10 @@
 			{{#if products}}
 				{{#each products}}
 				<div class="product caneat-{{caneat}}">
-					<img src="{{picURL}}">
+					<div class="prodImg">
+						<!-- <img src="{{picURL}}"> -->
+						<div style="background-image: url({{picURL}});"></div>
+					</div>
 					<div class="status status-{{caneat}}"></div>
 
 					<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
