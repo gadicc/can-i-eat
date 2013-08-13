@@ -61,7 +61,7 @@ if (Meteor.isClient) {
 
   Template.products.rendered = function() {
     var query = Session.get('QUERY_SEARCH');
-    if (query.length > 0) {
+    if (query && query.length > 0) {
       $('#productsDiv .name').each(function() {
         var $this = $(this), html;
         if ($this.data('highlighted'))
