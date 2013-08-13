@@ -77,7 +77,8 @@ if (Meteor.isClient) {
   Template.browse.rendered = _.once(function() {
     var browse = Session.get('QUERY_BROWSE');
     if (browse) $('#browseSelect').val(browse);
-    $('#browseSelect').select2({ data: allCategories, placeholder: 'All Categories', allowClear: true });
+    $('#browseSelect').select2({ query: function(query) { console.log(allCategories); query.callback({results: allCategories}); },
+      placeholder: 'All Categories', allowClear: true });
     $('#browseSelect').on('change', function(e) {
       if (e.val == '') {
         Session.set('QUERY_TYPE', 'ALL');
@@ -301,7 +302,6 @@ if (Meteor.isClient) {
 
       modal({title: 'Edit Product',
         body: new Handlebars.SafeString(mTpl()) });
-      console.log('loaded');
 
       $('#edit-product span[data-id="company"]').editable({
         source: allCompanies, display: function(ids, source) { select2display(ids, source, Companies, this) },
