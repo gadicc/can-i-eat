@@ -6,6 +6,14 @@ rules:
 
 */
 
+function queryToRegExp(query) {
+  if (query.match(/^\/(.*)\/$/))
+    query = query.substr(1, query.length-2);
+  else
+    query = '(' + query + ')';
+  return query;
+}
+
 // TODO, check where user input is used unescaped
 
 if (Meteor.isClient) {
@@ -14,18 +22,50 @@ if (Meteor.isClient) {
     var path;
     if (location.pathname.length > 1) {
       path = location.pathname.substr(1);
-      if (path.substr(0,4) == 'upc/')
-        console.log('upc');
-      else if (path.substr(0,7) == 'browse/')
-        console.log('browse');
-      else
+      if (path.substr(0,4) == 'upc/') {
+        Session.set('QUERY_TYPE', 'UPC');
+        Session.set('QUERY_UPC', path.substr(4));
+      } else if (path.substr(0,7) == 'browse/') {
+        Session.set('QUERY_TYPE', 'BROWSE');
+        var obj = Categories.findOne({name: path.substr(7)});
+        Session.set('QUERY_BROWSE', obj ? obj._id : '');
+      } else {
         $('#query').val(path);
+        Session.set('QUERY_TYPE', 'SEARCH');
+        Session.set('QUERY_SEARCH', path);
+      }
+    } else {
+      Session.set('QUERY_TYPE', 'ALL');
     }
   });
 
-  Template.products.products = function() {
-    return Products.find({}, { sort: { name: 1 } }).fetch();
+  Template.heading.browseName = function() {
+    return Categories.findOne(Session.get('QUERY_BROWSE')).name;
   }
+
+  Template.products.products = function() {
+    var query = {};
+    switch (Session.get('QUERY_TYPE')) {
+      case 'UPC': query.barcode = Session.get('QUERY_UPC'); break;
+      case 'BROWSE': query.categories = Session.get('QUERY_BROWSE'); break;
+      case 'SEARCH': query.name = {$regex: queryToRegExp(Session.get('QUERY_SEARCH')), $options: 'i'}; break;
+    }
+    return Products.find(query, { sort: { name: 1 } }).fetch();
+  }
+
+  Template.browse.rendered = _.once(function() {
+    var browse = Session.get('QUERY_BROWSE');
+    if (browse) $('#browseSelect').val(browse);
+    $('#browseSelect').select2({ data: allCategories, placeholder: 'All Categories', allowClear: true });
+    $('#browseSelect').on('change', function(e) {
+      if (e.val == '') {
+        Session.set('QUERY_TYPE', 'ALL');
+      } else {
+        Session.set('QUERY_TYPE', 'BROWSE');
+        Session.set('QUERY_BROWSE', e.val);
+      }
+    });
+  });
 
   Template['edit-product'].props = templateProps;
 
@@ -65,7 +105,7 @@ if (Meteor.isClient) {
       }
     }
 
-    return caneat;
+    return caneat || 'yes';
   }
   Template.products.caneatMsg = function() {
     var caneat = null, out = [];
@@ -210,14 +250,16 @@ if (Meteor.isClient) {
         select2: { createSearchChoice: defaultCreateSearchChoice },
         success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
       });
-      $('#edit-product span[data-id="ingredients"]').editable({
-        source: allIngredients, mode: 'inline',
-        select2: { width: '400px', multiple: true, createSearchChoice: defaultCreateSearchChoice },
-        success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
-      });
       $('#edit-product span[data-id="categories"]').editable({
         source: allCategories, select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
         success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
+      });
+      $('#edit-product span[data-id="ingredients"]').editable({
+        source: allIngredients, mode: 'inline',
+        select2: {
+            width: '400px', multiple: true,
+            createSearchChoice: defaultCreateSearchChoice },
+        success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="status"]').editable({
         source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
@@ -245,9 +287,15 @@ if (Meteor.isClient) {
   }
 
   Template.search.events({
-    'keyup #query': function() {
-      Session.set('query', $('#query').val());
-    }
+    'keyup #query': _.debounce(function() {
+      var query = $('#query').val();
+      if (query.length == 0) {
+        Session.set('QUERY_TYPE', 'ALL');
+      } else {
+        Session.set('QUERY_TYPE', 'SEARCH');
+        Session.set('QUERY_SEARCH', query);
+      }
+    }, 100)
   });
 
   Template['add-product'].companies = function() {
@@ -259,16 +307,21 @@ if (Meteor.isClient) {
     allCompanies: { collection: Companies },
     allCategories: { collection: Categories }
   }
-  for (key in alls) {
-    window[key] = null;
-    Deps.autorun(function() {
-      var out = [], items = alls[key].collection.find().fetch();
-      _.each(items, function(item) {
-        out.push( { id: item._id, text: item.name });
-      });
-      window[key] = out;
-    })
-  }
+
+  Meteor.startup(function() {
+    for (key in alls) {
+      window[key] = null;
+      Deps.autorun((function(key) {
+        return function() {
+          var out = [], items = alls[key].collection.find().fetch();
+          _.each(items, function(item) {
+            out.push( { id: item._id, text: item.name });
+          });
+          window[key] = out;
+        }
+      })(key));
+    }
+  });
 
   modal = function(context, id) {
       if (!id) id = 'modalStandard';

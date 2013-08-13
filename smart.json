@@ -3,6 +3,7 @@
     "x-editable-bootstrap": {},
     "select2": {},
     "font-awesome": {},
-    "router": {}
+    "router": {},
+    "handlebar-helpers": {}
   }
 }

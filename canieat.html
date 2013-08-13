@@ -27,12 +27,25 @@
 </body>
 
 <template name="main">
+		{{> heading}}
 		{{> products}}
 	  <br />
 	  {{> actions}}
 	  {{> app}}
 	  {{> todo}}
 	  <!-- bisli bbq 7290000066165 -->
+</template>
+
+<template name="heading">
+	{{#if $.Session.equals 'QUERY_TYPE' 'UPC'}}
+		<h1>UPC: {{$.Session.get 'QUERY_UPC'}}</h1>
+	{{/if}}
+	{{#if $.Session.equals 'QUERY_TYPE' 'SEARCH'}}
+		<h1>Search: {{$.Session.get 'QUERY_SEARCH'}}</h1>
+	{{/if}}
+	{{#if $.Session.equals 'QUERY_TYPE' 'BROWSE'}}
+		<h1>Browse: {{browseName}}</h1>
+	{{/if}}
 </template>
 
 <template name="actions">
@@ -49,8 +62,9 @@
 <template name="search">
 	Search: <input type="text" id="query" name="search">{{search}}</input>
 </template>
+
 <template name="browse">
-	Browse: <select><option value="snacks">snacks</option></select>
+	Browse: <input type='hidden' id="browseSelect" />
 </template>
 
 <template name="app">
@@ -61,25 +75,29 @@
 
 <template name="products">
 	<div>
-		{{#each products}}
-		<div class="product caneat-{{caneat}}">
-			<img src="{{picURL}}">
-			<div class="status status-{{caneat}}"></div>
+		{{#if products}}
+			{{#each products}}
+			<div class="product caneat-{{caneat}}">
+				<img src="{{picURL}}">
+				<div class="status status-{{caneat}}"></div>
 
-			<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
-			<ul>
-			{{#each caneatMsg}}
-				{{#with this}}
-				<li>
-					{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
-					{{note}}
-					{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
-				</li>
-				{{/with}}
+				<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
+				<ul>
+				{{#each caneatMsg}}
+					{{#with this}}
+					<li>
+						{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
+						{{note}}
+						{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
+					</li>
+					{{/with}}
+				{{/each}}
+				</ul>
+			</div>
 			{{/each}}
-			</ul>
-		</div>
-		{{/each}}
+		{{else}}
+			<p>No results.</p>
+		{{/if}}
 	</div>
 </template>
 
@@ -127,7 +145,7 @@
 		<tr><td>Barcode</td><td><span data-id="barcode">{{barcode}}</span><td></tr>
 		<tr><td>PicURL:</td><td><span data-id="picURL">{{picURL}}</span><td></tr>
 		<tr><td>Ingredients:</td><td><span data-type="select2" data-value="{{ingredients}}" data-id="ingredients"></span><td></tr>
-		<tr><td><br /><b><u>Exceptions</u></b></td>
+		<tr><td><br /><b><u>Overrides:</u></b></td>
 			<td><br />Only use the below to override the ingredients (e.g. E631 definitely vegan).</td></tr>
 		{{props}}
 		</table>
