@@ -44,7 +44,7 @@ if (Meteor.isClient) {
   Template.heading.browseName = function() {
     var id = Session.get('QUERY_BROWSE');
     var obj = Categories.findOne(id);
-    return (obj && obj.name) || 'x';
+    return (obj && obj.name) || '...';
   }
 
   Template.products.products = function() {
@@ -96,7 +96,11 @@ if (Meteor.isClient) {
       query: function(query) { query.callback({results: allCategories}); },
       placeholder: 'All Categories', allowClear: true,
       initSelection: function(element, callback) {
-        callback({id: element.val(), text: Categories.findOne(element.val()).name});
+        var id = element.val();
+        console.log(id);
+        var obj = Categories.findOne(id);
+        if (obj)
+        callback({id: obj , text: obj.name});
       }
     });
     $('#browseSelect').on('change', function(e) {
