@@ -18,29 +18,6 @@ function queryToRegExp(query) {
 
 if (Meteor.isClient) {
 
-/*
-  Meteor.startup(function() {
-    var path;
-    if (location.pathname.length > 1) {
-      path = location.pathname.substr(1);
-      if (path.substr(0,4) == 'upc/') {
-        Session.set('QUERY_TYPE', 'UPC');
-        Session.set('QUERY_UPC', path.substr(4));
-      } else if (path.substr(0,7) == 'browse/') {
-        Session.set('QUERY_TYPE', 'BROWSE');
-        var obj = Categories.findOne({name: path.substr(7)});
-        Session.set('QUERY_BROWSE', obj ? obj._id : '');
-      } else {
-        $('#query').val(path);
-        Session.set('QUERY_TYPE', 'SEARCH');
-        Session.set('QUERY_SEARCH', path);
-      }
-    } else {
-      Session.set('QUERY_TYPE', 'ALL');
-    }
-  });
-*/
-
   Template.heading.browseName = function() {
     var id = Session.get('QUERY_BROWSE');
     var obj = Categories.findOne(id);
@@ -78,47 +55,41 @@ if (Meteor.isClient) {
     }
   }
 
-  Template.browse.rendered = _.once(function() {
+  Template.browse.rendered = function() {
+    var select = $('#browseSelect');
+    if (select.data('select2'))
+      return;
+
     var browse = Session.get('QUERY_BROWSE');
     if (browse) {
-      $('#browseSelect').val(browse);
+      select.val(browse);
     } else {
       if (location.pathname.substr(0, 8) == '/browse/')
         var name = location.pathname.substr(8);
         var obj = Companies.findOne({name: name});
         if (obj) {
-          console.log(obj._id);
-          $('#browseSelect').val(obj._id);
+          select.val(obj._id);
         }
     }
 
-    $('#browseSelect').select2({
+    select.select2({
       query: function(query) { query.callback({results: allCategories}); },
       placeholder: 'All Categories', allowClear: true,
       initSelection: function(element, callback) {
         var id = element.val();
-        console.log(id);
         var obj = Categories.findOne(id);
         if (obj)
-        callback({id: obj , text: obj.name});
+          callback({id: id, text: obj.name});
       }
-    });
-    $('#browseSelect').on('change', function(e) {
+    }).on('change', function(e) {
       if (e.val == '') {
-        Session.set('QUERY_TYPE', 'ALL');
-        if (history && history.pushState) {
-          history.pushState(null, '', '/');
-        }
+        Meteor.Router.to('/');
       } else {
-        Session.set('QUERY_TYPE', 'BROWSE');
-        Session.set('QUERY_BROWSE', e.val);
-        if (history && history.pushState) {
-          var name = Categories.findOne(e.val).name;
-          history.pushState(null, '', '/browse/' + name);
-        }
+        var name = Categories.findOne(e.val).name;
+        Meteor.Router.to('/browse/' + name); return;
       }
     });
-  });
+  };
 
   Template['edit-product'].props = templateProps;
 
@@ -446,6 +417,7 @@ if (Meteor.isClient) {
   Meteor.Router.add({
     '/ingredients': 'ingredients',
     '/browse/:id': function(id) {
+      console.log('browse');
       Session.set('QUERY_TYPE', 'BROWSE');
       var obj = Categories.findOne({name: id});
       Session.set('QUERY_BROWSE', obj ? obj._id : '');
@@ -458,13 +430,11 @@ if (Meteor.isClient) {
       return 'main';
     },
     '/:query': function(query) {
-        console.log('query: ' + query);
-        Session.set('QUERY_TYPE', 'SEARCH');
-        Session.set('QUERY_SEARCH', query);
-        return 'main';
+      Session.set('QUERY_TYPE', 'SEARCH');
+      Session.set('QUERY_SEARCH', query);
+      return 'main';
     },
     '*': function() {
-      console.log('default');
       Session.set('QUERY_TYPE', 'ALL');
       return 'main';
     }

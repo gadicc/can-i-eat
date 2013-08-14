@@ -5,7 +5,9 @@
 
 <body>
 	<div id="topDiv">
+		{{#constant}}
 		{{> browse}} &nbsp;
+		{{/constant}}
 		{{> search}} &nbsp;
 		Rules: &nbsp;
 	  <label>
@@ -14,14 +16,16 @@
 		</label>
 
 	  	<div id="topDivRight">
-			<img src="/favicon.ico">
-	  		<span>can-i-eat</span> |
+	  		<a href="/">
+					<img src="/favicon.ico">
+	  			<span>can-i-eat</span> |
+	  		</a>
 	  	{{loginButtons}}
 	  </div>
 	</div>
 
 	<div id="mainDiv">
-		{{renderPage}}
+		{{#isolate}}{{renderPage}}{{/isolate}}
 	  {{> modalStandard}}
 	</div>
 </body>
@@ -64,7 +68,9 @@
 </template>
 
 <template name="browse">
-	Browse: <input type='hidden' id="browseSelect" />
+	{{#constant}}
+		Browse: <input type='hidden' id="browseSelect" />
+	{{/constant}}
 </template>
 
 <template name="app">

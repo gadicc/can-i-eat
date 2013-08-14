@@ -11,8 +11,8 @@
 }
 
 #topDivRight { float: right; line-height: 200% }
-#topDivRight > img { height: 25px; margin-right: 3px; }
-#topDivRight > span { font-weight: bold; color: white; margin-right: 2px; }
+#topDivRight > a > img { height: 25px; margin-right: 3px; }
+#topDivRight > a > span { font-weight: bold; color: white; margin-right: 2px; }
 
 #login-dropdown-list { left: inherit; right: 2px; }
 #login-dropdown-list a.login-close-text { float: right; }
