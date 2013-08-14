@@ -234,9 +234,6 @@ if (Meteor.isClient) {
 
   function defaultCreateSearchChoice(term, data) {
     if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {
-      var x = $('#edit-product span[data-id="company"]').data('editable');
-      allCompanies.push({ id: term, text: term });
-      x.options.source = allCompanies;
       return { id: term, text: term };
     }
   }
