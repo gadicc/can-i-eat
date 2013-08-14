@@ -77,7 +77,8 @@ if (Meteor.isClient) {
   Template.browse.rendered = _.once(function() {
     var browse = Session.get('QUERY_BROWSE');
     if (browse) $('#browseSelect').val(browse);
-    $('#browseSelect').select2({ query: function(query) { console.log(allCategories); query.callback({results: allCategories}); },
+    $('#browseSelect').select2({
+      query: function(query) { query.callback({results: allCategories}); },
       placeholder: 'All Categories', allowClear: true });
     $('#browseSelect').on('change', function(e) {
       if (e.val == '') {
@@ -266,6 +267,7 @@ if (Meteor.isClient) {
    * in deployment. */
   function select2display(ids, source, collection, self) {
     var id, doc, html = [], changed = false, $this = $(self);
+    console.log('select2display');
 
     if (!_.isArray(ids))
       ids = [ids];
@@ -306,25 +308,20 @@ if (Meteor.isClient) {
       $('#edit-product span[data-id="company"]').editable({
         source: allCompanies, display: function(ids, source) { select2display(ids, source, Companies, this) },
         select2: { createSearchChoice: defaultCreateSearchChoice },
-        success: editableSuccessTpl
+        success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="categories"]').editable({
         source: allCategories, display: function(ids, source) { select2display(ids, source, Categories, this) },
         select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
-        success: editableSuccessTpl
-        /*
         success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
-        */
       });
       $('#edit-product span[data-id="ingredients"]').editable({
         select2: {
             width: '400px', multiple: true,
             createSearchChoice: defaultCreateSearchChoice },
-        source: allIngredients, mode: 'inline', success: editableSuccessTpl,
+        source: allIngredients, mode: 'inline',
         display: function(ids, source) { select2display(ids, source, Ingredients, this) },
-        /*
         success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
-        */
       });
       $('#edit-product span[data-id="status"]').editable({
         source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
@@ -343,6 +340,7 @@ if (Meteor.isClient) {
   editableSuccess = function(item, response, newValue, self) {
     if (!self) self = this;
     var $this = $(self), propName = $this.data('id');
+    console.log('editableSuccess');
 
     // props.vegan.note, etc.
     if ($this.hasClass('prop'))
