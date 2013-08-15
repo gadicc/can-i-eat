@@ -14,6 +14,25 @@ function queryToRegExp(query) {
   return query;
 }
 
+// see if we added anything new
+function select2check(ids, collection, select2data) {
+  var doc;
+  for (var i=0; i < ids.length; i++) {
+    doc = collection.findOne(ids[i]);
+    if (!doc) {
+      doc = collection.findOne({name: ids[i]});
+      if (doc) {
+        ids[i] = doc._id;
+      } else {
+        id = collection.insert({name: ids[i]});
+        select2data.opts.data.push({ id: id, text: ids[i] });
+        ids[i] = id;
+      }
+    }     
+  }
+  return ids;
+}
+
 // TODO, check where user input is used unescaped
 
 if (Meteor.isClient) {
@@ -224,14 +243,31 @@ if (Meteor.isClient) {
         body: new Handlebars.SafeString(mTpl()) });
 
       var el, select2s = {
-        '#add-product-company': { data: allCompanies, multiple: false, createSearchChoice: defaultCreateSearchChoice },
-        '#add-product-ingredients': { data: allIngredients, multiple: true, createSearchChoice: defaultCreateSearchChoice },
-        '#add-product-categories': { data: allCategories, multiple: true, createSearchChoice: defaultCreateSearchChoice }
+        '#add-product-company': {
+          collection: Companies,
+          data: allCompanies, multiple: false, createSearchChoice: defaultCreateSearchChoice
+        },
+        '#add-product-ingredients': {
+          collection: Ingredients,
+          data: allIngredients, multiple: true, createSearchChoice: defaultCreateSearchChoice
+        },
+        '#add-product-categories': {
+          collection: Categories,
+          data: allCategories, multiple: true, createSearchChoice: defaultCreateSearchChoice
+        }
       }
       for (elId in select2s) {
         el = $(elId);
-        if (!el.prev().hasClass('select2-container'))
-          el.select2(select2s[elId]);
+        if (!el.prev().hasClass('select2-container')) {
+          el.select2(select2s[elId]).on('change', (function(collection) {
+            return function(event) {
+              // check for new items, add them to database and replace value list
+              var val = _.isArray(event.val) ? event.val : [event.val];
+              val = select2check(val, collection, $(event.target).data('select2'));
+              $(event.target).select2('val', val);
+            }
+          })(select2s[elId].collection));
+        }
       }
 
       $('#modalStandard .btn-primary').click(function() {
@@ -244,7 +280,6 @@ if (Meteor.isClient) {
           ingredients: $('#add-product-ingredients').val().split(','),
           picURL: $('#add-product-picURL').val()
         });
-        console.log(mTpl.product);
         mTpl.product.save();
       });
     }
@@ -281,7 +316,7 @@ if (Meteor.isClient) {
 
   /* this is a workaround, see old way commented out below.  old way worked perfect in development but not
    * in deployment. */
-  function select2display(ids, source, collection, self) {
+  function select2display(ids, source, collection, self, obj) {
     var id, doc, html = [], changed = false, $this = $(self);
     console.log('select2display');
 
@@ -308,8 +343,12 @@ if (Meteor.isClient) {
     }
 
     $this.html(html.join(','));
-    if (changed)
+    if (changed) {
       $this.data('value', ids.join(','));
+      var id = $this.parents('[data-product-id]').data('product-id');
+      var field = $this.data('id');
+      obj.update(field, ids);
+    }
   }
 
   Template.products.events({
@@ -322,22 +361,24 @@ if (Meteor.isClient) {
         body: new Handlebars.SafeString(mTpl()) });
 
       $('#edit-product span[data-id="company"]').editable({
-        source: allCompanies, display: function(ids, source) { select2display(ids, source, Companies, this) },
+        source: allCompanies,
         select2: { createSearchChoice: defaultCreateSearchChoice },
-        success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
+        display: function(ids, source) { select2display(ids, source, Companies, this, mTpl.product) },
+        //success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="categories"]').editable({
-        source: allCategories, display: function(ids, source) { select2display(ids, source, Categories, this) },
+        source: allCategories,
         select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
-        success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
+        display: function(ids, source) { select2display(ids, source, Categories, this, mTpl.product) },
+        //success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="ingredients"]').editable({
         select2: {
             width: '400px', multiple: true,
             createSearchChoice: defaultCreateSearchChoice },
         source: allIngredients, mode: 'inline',
-        display: function(ids, source) { select2display(ids, source, Ingredients, this) },
-        success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
+        display: function(ids, source) { select2display(ids, source, Ingredients, this, mTpl.product) },
+        //success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
       });
       $('#edit-product span[data-id="status"]').editable({
         source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
