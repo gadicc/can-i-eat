@@ -25,11 +25,17 @@ if (Meteor.isClient) {
   }
 
   Template.products.products = function() {
+    var upc, search, browse;
     var query = {};
-    switch (Session.get('QUERY_TYPE')) {
-      case 'UPC': query.barcode = Session.get('QUERY_UPC'); break;
-      case 'BROWSE': query.categories = Session.get('QUERY_BROWSE'); break;
-      case 'SEARCH': query.name = {$regex: queryToRegExp(Session.get('QUERY_SEARCH')), $options: 'i'}; break;
+
+    upc = Session.get('QUERY_UPC');
+    if (upc) {
+      query.barcode = upc;
+    } else {
+      search = Session.get('QUERY_SEARCH');
+      browse = Session.get('QUERY_BROWSE');
+      if (search) query.name = { $regex: queryToRegExp(search), $options: 'i' };
+      if (browse) query.categories = browse;
     }
     return Products.find(query, { sort: { name: 1 } }).fetch();
   }
@@ -82,12 +88,7 @@ if (Meteor.isClient) {
           callback({id: id, text: obj.name});
       }
     }).on('change', function(e) {
-      if (e.val == '') {
-        Meteor.Router.to('/');
-      } else {
-        var name = Categories.findOne(e.val).name;
-        Meteor.Router.to('/browse/' + name); return;
-      }
+      Meteor.Router.to(e.val == '' ? '/' : makePath({browse: e.val}));
     });
   };
 
@@ -366,7 +367,6 @@ if (Meteor.isClient) {
 
   Template.search.events({
     'click #searchWrap span': function() {
-      Session.set('QUERY_TYPE', 'ALL');
       Session.set('QUERY_SEARCH', '');
       $('#query').val('');
     }
@@ -375,20 +375,15 @@ if (Meteor.isClient) {
   Template.search.events({
     'keyup #query': _.debounce(function() {
       var query = $('#query').val();
-      if (query.length == 0) {
-        Session.set('QUERY_TYPE', 'ALL');
+      if (Session.equals('QUERY_SEARCH', '')) {
+        if (history && history.pushState) {
+          history.pushState(null, '', makePath({search: query}));
+        }      
       } else {
-        if (Session.equals('QUERY_TYPE', 'SEARCH')) {
-          if (history && history.replaceState) {
-            history.replaceState(null, '', '/' + query);  
-          }        
-        } else {
-          Session.set('QUERY_TYPE', 'SEARCH');
-          if (history && history.pushState) {
-            history.pushState(null, '', '/' + query);
-          }      
-        }  
-      }
+        if (history && history.replaceState) {
+          history.replaceState(null, '', makePath({search: query}));  
+        }        
+      }  
       Session.set('QUERY_SEARCH', query);
     }, 100)
   });
@@ -436,31 +431,52 @@ if (Meteor.isClient) {
       });
   }
 
+  Session.setDefault('QUERY_UPC', '');
+  Session.setDefault('QUERY_SEARCH', '');
+  Session.setDefault('QUERY_BROWSE', '');
+
+  function makePath(params) {
+    var out = '';
+    var search = typeof params.search != 'undefined' ? params.search : Session.get('QUERY_SEARCH');
+    var browse = typeof params.browse != 'undefined' ? params.browse : Session.get('QUERY_BROWSE');
+    if (browse)
+      out += '/browse/' + Categories.findOne(browse).name;
+    if (search)
+      out += '/' + search;
+    return out;
+  }
+
   Meteor.Router.add({
     '/ingredients': 'ingredients',
+    '/browse/:browse/:search': function(browse, search) {
+      var obj = Categories.findOne({name: browse});
+      Session.set('QUERY_UPC', '');
+      Session.set('QUERY_SEARCH', search);
+      Session.set('QUERY_BROWSE', obj ? obj._id : '');
+      if (obj) $('#browseSelect').select2('val', obj._id);
+      return 'main';      
+    },
     '/browse/:id': function(id) {
-      console.log('browse');
-      Session.set('QUERY_TYPE', 'BROWSE');
       var obj = Categories.findOne({name: id});
+      Session.set('QUERY_UPC', '');
       Session.set('QUERY_BROWSE', obj ? obj._id : '');
       if (obj) $('#browseSelect').select2('val', obj._id);
       return 'main';
     },
     '/upc/:id': function(id) {
-      Session.set('QUERY_TYPE', 'UPC');
       Session.set('QUERY_UPC', id);
       return 'main';
     },
     '/:query': function(query) {
-      Session.set('QUERY_TYPE', 'SEARCH');
+      Session.set('QUERY_UPC', '');
       Session.set('QUERY_SEARCH', query);
       return 'main';
     },
     '*': function() {
-      Session.set('QUERY_TYPE', 'ALL');
+      Session.set('QUERY_UPC', '');
+      Session.set('QUERY_BROWSE', '');
+      Session.set('QUERY_SEARCH', '');
       return 'main';
     }
   });
 }
-
-

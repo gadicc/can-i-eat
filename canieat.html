@@ -48,15 +48,29 @@
 </template>
 
 <template name="heading">
-	{{#if $.Session.equals 'QUERY_TYPE' 'UPC'}}
-		<h1>UPC: {{$.Session.get 'QUERY_UPC'}}</h1>
-	{{/if}}
-	{{#if $.Session.equals 'QUERY_TYPE' 'SEARCH'}}
-		<h1>Search: {{$.Session.get 'QUERY_SEARCH'}}</h1>
-	{{/if}}
-	{{#if $.Session.equals 'QUERY_TYPE' 'BROWSE'}}
-		<h1>Browse: {{browseName}}</h1>
-	{{/if}}
+	<h1>
+		{{#if $.Session.equals 'QUERY_UPC' ''}}
+
+			{{#if $.Session.equals 'QUERY_SEARCH' ''}}
+				Everything
+			{{else}}
+				'{{$.Session.get 'QUERY_SEARCH'}}'
+			{{/if}}
+
+			in
+
+			{{#if $.Session.equals 'QUERY_BROWSE' ''}}
+				all Categories
+			{{else}}
+				'{{browseName}}'
+			{{/if}}
+			
+		{{else}}
+
+			UPC: {{$.Session.get 'QUERY_UPC'}}
+
+		{{/if}}
+	</h1>
 </template>
 
 <template name="showType">
