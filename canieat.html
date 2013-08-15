@@ -5,21 +5,28 @@
 
 <body>
 	<div id="topDiv">
+		<a href="/" class="home">
+			<img src="/favicon.ico">
+			<span>can-eat.it</span>
+		</a> &nbsp;
 		{{#constant}}
 		{{> browse}} &nbsp;
 		{{/constant}}
 		{{> search}} &nbsp;
-		Rules: &nbsp;
-	  <label>
-			<input type="checkbox" value="for" checked="checked" disabled>
-			<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>Vegan
-		</label>
 
-	  	<div id="topDivRight">
-	  		<a href="/">
-					<img src="/favicon.ico">
-	  			<span>can-i-eat</span> |
-	  		</a>
+		<span id="rules">
+			Rules: &nbsp;
+		  <label>
+				<input type="checkbox" value="for" checked="checked" disabled>
+				<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>Vegan
+			</label>
+		</span>
+
+		&nbsp; | &nbsp;
+
+		{{> showType}}
+
+  	<div id="topDivRight">
 	  	{{loginButtons}}
 	  </div>
 	</div>
@@ -52,6 +59,22 @@
 	{{/if}}
 </template>
 
+<template name="showType">
+	{{#constant}}
+	<span id="showType" data-select="{{$.Session.get 'showType'}}">
+		<span class="box">
+			<span class="all">✱</span>
+			<span class="yes">✔</span>
+			<span class="no">✗</span>
+		</span>
+  		<span class="all">Show All</span>
+  		<span class="yes">Passes</span>
+  		<span class="no">Fails</span>
+  	</select>
+	</label>
+	{{/constant}}
+</template>
+
 <template name="actions">
 	{{#if currentUser}}
   	<p>
@@ -64,12 +87,15 @@
 </template>
 
 <template name="search">
-	Search: <input type="text" id="query" name="search">{{search}}</input>
+	<span id="searchWrap">
+		<input type="text" id="query" name="search" value="{{search}}" />
+		<i class="icon-search"></i><span class="{{#if $.Session.equals 'QUERY_SEARCH' ''}}hidden{{/if}}">✗</span>
+	</span>
 </template>
 
 <template name="browse">
 	{{#constant}}
-		Browse: <input type='hidden' id="browseSelect" />
+		<input type='hidden' id="browseSelect" />
 	{{/constant}}
 </template>
 
@@ -85,7 +111,7 @@
 		{{#if ready}}
 			{{#if products}}
 				{{#each products}}
-				<div class="product caneat-{{caneat}}">
+				<div class="product caneat-{{caneat}} {{show caneat}}">
 					<div class="prodImg">
 						<div style="background-image: url({{picURL}});"></div>
 					</div>

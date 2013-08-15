@@ -91,6 +91,18 @@ if (Meteor.isClient) {
     });
   };
 
+  Session.setDefault('showType', 'all');
+  Template.showType.events({
+    'click': function() {
+      var type = Session.get('showType');
+      if (type == 'all') type = 'yes';
+      else if (type == 'yes') type = 'no';
+      else type = 'all';
+      $('#showType').attr('data-select', type);
+      Session.set('showType', type);
+    }
+  });
+
   Template['edit-product'].props = templateProps;
 
   Template.products.caneat = function() {
@@ -195,6 +207,11 @@ if (Meteor.isClient) {
 //    console.log(out);
     return out;
   }
+
+  Template.products.show = function(caneat) {
+    var type = Session.get('showType');
+    return (type == 'all' || caneat == type) ? '' : 'displayNone';
+  };
 
   Template.actions.events({
     'click #add-product': function(event) {
@@ -346,6 +363,14 @@ if (Meteor.isClient) {
 
     item.update(propName, newValue);
   }
+
+  Template.search.events({
+    'click #searchWrap span': function() {
+      Session.set('QUERY_TYPE', 'ALL');
+      Session.set('QUERY_SEARCH', '');
+      $('#query').val('');
+    }
+  });
 
   Template.search.events({
     'keyup #query': _.debounce(function() {
