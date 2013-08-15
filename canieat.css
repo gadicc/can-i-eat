@@ -70,17 +70,17 @@ a.home > span { font-weight: bold; color: white; margin-right: 2px; }
 }
 
 div.product {
-	border: 2px solid black;
-	border-radius: 8px;
-	margin: 5px;
-	padding: 10px 10px 10px 90px;
+	width: 220px;
+	border: 2px solid black; border-radius: 8px;
+	padding: 10px 10px 10px 115px; margin: 5px;
 	vertical-align: top;
-	display: inline-block; width: 400px; min-height: 100px;
+	display: inline-block;
+	min-height: 122px;
 	position: relative;
 	color: black;
 }
 div.product .prodImg {
-	height: 100px; width: 70px; margin-right: 20px;
+	height: 120px; width: 90px; margin-right: 20px;
 	position: absolute; top: 10px; left: 10px;
 	border: 1px solid black; border-radius: 5px;
 	background: white;
