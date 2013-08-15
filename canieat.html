@@ -60,11 +60,11 @@
 			in
 
 			{{#if $.Session.equals 'QUERY_BROWSE' ''}}
-				all Categories
+				All Categories
 			{{else}}
 				'{{browseName}}'
 			{{/if}}
-			
+
 		{{else}}
 
 			UPC: {{$.Session.get 'QUERY_UPC'}}

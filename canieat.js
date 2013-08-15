@@ -370,7 +370,7 @@ if (Meteor.isClient) {
       Session.set('QUERY_SEARCH', '');
       $('#query').val('');
         if (history && history.pushState) {
-          history.pushState(null, '', '/' + makePath());
+          history.pushState(null, '', makePath());
         }      
     }
   });
@@ -439,13 +439,13 @@ if (Meteor.isClient) {
   Session.setDefault('QUERY_BROWSE', '');
 
   function makePath(params) {
-    var out = '';
+    var out = '/';
     var search = params && typeof params.search != 'undefined' ? params.search : Session.get('QUERY_SEARCH');
     var browse = params && typeof params.browse != 'undefined' ? params.browse : Session.get('QUERY_BROWSE');
     if (browse)
-      out += '/browse/' + Categories.findOne(browse).name;
+      out += 'browse/' + Categories.findOne(browse).name;
     if (search)
-      out += '/' + search;
+      out += (browse ? '/' : '') + search;
     return out;
   }
 
