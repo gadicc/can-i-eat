@@ -369,6 +369,9 @@ if (Meteor.isClient) {
     'click #searchWrap span': function() {
       Session.set('QUERY_SEARCH', '');
       $('#query').val('');
+        if (history && history.pushState) {
+          history.pushState(null, '', '/' + makePath());
+        }      
     }
   });
 
@@ -437,8 +440,8 @@ if (Meteor.isClient) {
 
   function makePath(params) {
     var out = '';
-    var search = typeof params.search != 'undefined' ? params.search : Session.get('QUERY_SEARCH');
-    var browse = typeof params.browse != 'undefined' ? params.browse : Session.get('QUERY_BROWSE');
+    var search = params && typeof params.search != 'undefined' ? params.search : Session.get('QUERY_SEARCH');
+    var browse = params && typeof params.browse != 'undefined' ? params.browse : Session.get('QUERY_BROWSE');
     if (browse)
       out += '/browse/' + Categories.findOne(browse).name;
     if (search)
