@@ -58,7 +58,7 @@ a.home > span { font-weight: bold; color: white; margin-right: 2px; }
 }
 #showType span.box .yes { color: green; }
 #showType span.box .no { color: red; }
-#showType span.box .all { color: #aa0; }
+#showType span.box .all { color: #bb0; }
 #showType span:not(.box) { display: none; }
 #showType[data-select="yes"] span.yes { display: inline-block; }
 #showType[data-select="all"] span.all { display: inline-block; }
