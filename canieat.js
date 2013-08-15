@@ -397,7 +397,7 @@ if (Meteor.isClient) {
   });
 
   Template['add-product'].companies = function() {
-    return Companies.find().fetch();
+    return Companies.find({}, {sort: {name: 1}}).fetch();
   }
 
   var alls = {
@@ -412,7 +412,7 @@ if (Meteor.isClient) {
       window[key] = null;
       Deps.autorun((function(key) {
         return function() {
-          var out = [], items = alls[key].collection.find().fetch();
+          var out = [], items = alls[key].collection.find({}, {sort:{name:1}}).fetch();
           _.each(items, function(item) {
             out.push( { id: item._id, text: item.name });
           });
