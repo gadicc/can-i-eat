@@ -88,7 +88,7 @@ if (Meteor.isClient) {
           callback({id: id, text: obj.name});
       }
     }).on('change', function(e) {
-      Meteor.Router.to(e.val == '' ? '/' : makePath({browse: e.val}));
+      Meteor.Router.to(makePath({browse: e.val}));
     });
   };
 
@@ -470,6 +470,7 @@ if (Meteor.isClient) {
     '/:query': function(query) {
       Session.set('QUERY_UPC', '');
       Session.set('QUERY_SEARCH', query);
+      Session.set('QUERY_BROWSE', '');
       return 'main';
     },
     '*': function() {
