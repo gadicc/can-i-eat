@@ -443,7 +443,7 @@ if (Meteor.isClient) {
     var search = params && typeof params.search != 'undefined' ? params.search : Session.get('QUERY_SEARCH');
     var browse = params && typeof params.browse != 'undefined' ? params.browse : Session.get('QUERY_BROWSE');
     if (browse)
-      out += 'browse/' + Categories.findOne(browse).name;
+      out += 'browse/' + Categories.findOne(browse).name.replace(' ', '_');
     if (search)
       out += (browse ? '/' : '') + search;
     return out;
@@ -452,7 +452,7 @@ if (Meteor.isClient) {
   Meteor.Router.add({
     '/ingredients': 'ingredients',
     '/browse/:browse/:search': function(browse, search) {
-      var obj = Categories.findOne({name: browse});
+      var obj = Categories.findOne({name: browse.replace('_', ' ')});
       Session.set('QUERY_UPC', '');
       Session.set('QUERY_SEARCH', search);
       Session.set('QUERY_BROWSE', obj ? obj._id : '');
@@ -460,7 +460,7 @@ if (Meteor.isClient) {
       return 'main';      
     },
     '/browse/:id': function(id) {
-      var obj = Categories.findOne({name: id});
+      var obj = Categories.findOne({name: id.replace('_', ' ')});
       Session.set('QUERY_UPC', '');
       Session.set('QUERY_BROWSE', obj ? obj._id : '');
       if (obj) $('#browseSelect').select2('val', obj._id);
