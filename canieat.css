@@ -123,7 +123,7 @@ div.product a { color: black; text-decoration: underline; }
 div.product .name { font-weight: bold; padding-top: 5px; }
 .caneat-yes { background: #3a3; }
 .caneat-no { background: #f33; }
-.caneat-maybe { background: none; }
+.caneat-maybe { background: #ee8; }
 
 
 a.edit {
