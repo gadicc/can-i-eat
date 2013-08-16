@@ -111,12 +111,6 @@ if (Meteor.isClient) {
       Meteor.Router.to(makePath({browse: e.val}));
     });
   };
-  Deps.autorun(function() {
-    var lang = Session.get('lang');
-    var select2data = $('#browseSelect').data('select2');
-    if (select2data)
-      select2data.opts.placeholder = mf('all_categories', null, 'All Categories');
-  });
 
   Session.setDefault('showType', 'all');
   Template.showType.events({
@@ -480,7 +474,7 @@ if (Meteor.isClient) {
         return function() {
           var out = [], items = alls[key].collection.find({}, {sort:{name:1}}).fetch();
           _.each(items, function(item) {
-            out.push( { id: item._id, text: item.name });
+            out.push( { id: item._id, text: getLang(item, 'name') });
           });
           window[key] = out;
         }

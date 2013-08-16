@@ -33,7 +33,7 @@ Companies.deny({
 
 Categories.allow({
 	insert: allowIfLoggedIn,
-	//update: allowIfLoggedIn
+	update: allowIfLoggedIn
 });
 
 Categories.deny({
