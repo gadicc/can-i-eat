@@ -83,7 +83,8 @@ if (Meteor.isClient) {
   Template.browse.rendered = function() {
     var select = $('#browseSelect');
     if (select.data('select2'))
-      return;
+      select.editable('destroy');
+//      return;
 
     var browse = Session.get('QUERY_BROWSE');
     if (browse) {
@@ -99,7 +100,7 @@ if (Meteor.isClient) {
 
     select.select2({
       query: function(query) { query.callback({results: allCategories}); },
-      placeholder: mf('All Categories', null, 'All Categories'), allowClear: true,
+      placeholder: mf('all_categories', null, 'All Categories'), allowClear: true,
       initSelection: function(element, callback) {
         var id = element.val();
         var obj = Categories.findOne(id);
@@ -110,6 +111,12 @@ if (Meteor.isClient) {
       Meteor.Router.to(makePath({browse: e.val}));
     });
   };
+  Deps.autorun(function() {
+    var lang = Session.get('lang');
+    var select2data = $('#browseSelect').data('select2');
+    if (select2data)
+      select2data.opts.placeholder = mf('all_categories', null, 'All Categories');
+  });
 
   Session.setDefault('showType', 'all');
   Template.showType.events({
