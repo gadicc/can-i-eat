@@ -4,16 +4,27 @@
 </head>
 
 <body>
+	{{> topDiv}}
+
+	<div id="mainDiv">
+		{{#isolate}}{{renderPage}}{{/isolate}}
+	  {{> modalStandard}}
+	</div>
+</body>
+
+<template name="topDiv">
 	<div id="topDiv">
+		{{#constant}}
 		<a href="/" class="home">
 			<img src="/favicon.ico">
 			<span>can-eat.it</span>
 		</a> &nbsp;
-		{{#constant}}
-		{{> browse}} &nbsp;
-		{{/constant}}
-		{{> search}} &nbsp;
 
+		{{> browse}} &nbsp;
+		{{> search}} &nbsp;
+		{{/constant}}
+
+		{{#isolate}}
 		<span id="rules">
 			{{mf 'Rules' 'Rules'}}: &nbsp;
 		  <label>
@@ -21,6 +32,7 @@
 				<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>{{mf 'Vegan' 'Vegan'}}
 			</label>
 		</span>
+		{{/isolate}}
 
 		&nbsp; | &nbsp;
 
@@ -31,12 +43,7 @@
 	  	{{loginButtons}}
 	  </div>
 	</div>
-
-	<div id="mainDiv">
-		{{#isolate}}{{renderPage}}{{/isolate}}
-	  {{> modalStandard}}
-	</div>
-</body>
+</template>
 
 <template name="langPicker">
 	<a>{{lang}}</a>
@@ -113,9 +120,9 @@
 </template>
 
 <template name="browse">
-	{{#constant}}
+	<span id="browseWrap">
 		<input type='hidden' id="browseSelect" />
-	{{/constant}}
+	</span>
 </template>
 
 <template name="app">

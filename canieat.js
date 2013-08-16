@@ -82,9 +82,10 @@ if (Meteor.isClient) {
 
   Template.browse.rendered = function() {
     var select = $('#browseSelect');
-    if (select.data('select2'))
-      select.editable('destroy');
-//      return;
+    if (select.data('select2')) {
+      console.log('bug - constant region was rerendered');
+      select.select2('destroy');
+    }
 
     var browse = Session.get('QUERY_BROWSE');
     if (browse) {
@@ -111,6 +112,21 @@ if (Meteor.isClient) {
       Meteor.Router.to(makePath({browse: e.val}));
     });
   };
+  Deps.autorun(function() {
+    // Change the browse placeholder "All Categories" when changing languages
+    var el, oldPH, newPH, lang = Session.get('lang');
+    var select2data = $('#browseSelect').data('select2');
+    if (select2data) {
+      oldPH = select2data.opts.placeholder;
+      newPH = mf('all_categories', null, 'All Categories');
+      select2data.opts.placeholder = newPH;
+
+      // If nothing was selected, we need to manually udpate the existing placeholder span
+      el = $('#browseWrap a.select2-choice > span');
+      if (el.html() == oldPH)
+        el.html(newPH);
+    }
+  });
 
   Session.setDefault('showType', 'all');
   Template.showType.events({
