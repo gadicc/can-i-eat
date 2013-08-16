@@ -106,7 +106,7 @@ if (Meteor.isClient) {
         var id = element.val();
         var obj = Categories.findOne(id);
         if (obj)
-          callback({id: id, text: obj.name});
+          callback({id: id, text: getLang(obj, 'name')});
       }
     }).on('change', function(e) {
       Meteor.Router.to(makePath({browse: e.val}));
@@ -125,6 +125,10 @@ if (Meteor.isClient) {
       el = $('#browseWrap a.select2-choice > span');
       if (el.html() == oldPH)
         el.html(newPH);
+      else {
+        var select = $('#browseSelect');
+        el.html(getLang(Categories.findOne(select.val()), 'name'));
+      }
     }
   });
 
