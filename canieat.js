@@ -40,7 +40,7 @@ if (Meteor.isClient) {
   Template.heading.browseName = function() {
     var id = Session.get('QUERY_BROWSE');
     var obj = Categories.findOne(id);
-    return (obj && obj.name) || '...';
+    return (obj && getLang(obj, 'name')) || '...';
   }
 
   Template.products.products = function() {
