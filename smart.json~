@@ -5,8 +5,6 @@
     "font-awesome": {},
     "router": {},
     "handlebar-helpers": {},
-    "messageformat": {
-	"path": "/home/dragon/www/smart/messageformat"
-    }
+    "messageformat": {}
   }
 }

@@ -11,18 +11,28 @@
 }
 
 #searchWrap { position: relative; }
-#searchWrap i { position: absolute; top: 2px; left: 8px; }
-#searchWrap span { position: absolute; top: 0px; right: 10px; font-size: 100%; }
+#searchWrap i { position: absolute; top: 2px; }
+body[dir=ltr] #searchWrap i { left: 8px; }
+body[dir=rtl] #searchWrap i { right: 8px; }
+#searchWrap span { position: absolute; top: 0px; font-size: 100%; }
+body[dir=ltr] #searchWrap span { right: 10px; }
+body[dir=rtl] #searchWrap span { left: 10px; }
+
 #searchWrap span:hover { text-shadow: 0px 0px 2px rgba(0,0,255,8.8); }
-#searchWrap input { padding-left: 27px; }
+body[dir=ltr] #searchWrap input { padding-left: 27px; }
+body[dir=rtl] #searchWrap input { padding-right: 27px; }
 .hidden { visibility: hidden; }
 
-#topDivRight { float: right; line-height: 200% }
+#topDivRight { line-height: 200% }
+body[dir=ltr] #topDivRight { float: right; }
+body[dir=rtl] #topDivRight { float: left; }
 a.home > img { height: 25px; margin-right: 3px; }
 a.home > span { font-weight: bold; color: white; margin-right: 2px; }
 
-#login-dropdown-list { left: inherit; right: 2px; }
-#login-dropdown-list a.login-close-text { float: right; }
+body[dir=ltr] #login-dropdown-list { left: inherit; right: 4px; }
+body[dir=rtl] #login-dropdown-list { left: 4px; }
+body[dir=ltr] #login-dropdown-list a.login-close-text { float: right; }
+body[dir=rtl] #login-dropdown-list a.login-close-text { float: left; }
 
 #topDiv input[type="radio"] { display: none; }
 #topDiv input[type="checkbox"] { display: none; }
@@ -32,13 +42,13 @@ a.home > span { font-weight: bold; color: white; margin-right: 2px; }
 	border: 1px solid #cbcbcd; border-radius: 5px; 
 	cursor:pointer; display: inline-block; color: #e9e9e9;
 	width: 1em; height: 1em; background: #e9e9e9;
-	font-size: 1.3em; text-align: center; margin-right: 5px;
+	font-size: 1.3em; text-align: center;
 	transition: color .15s linear, background-color .15s linear;
-	-moz-user-select: none;
-	-khtml-user-select: none;
-		-webkit-user-select: none;
-		user-select: none;
+	-moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; user-select: none;
 }
+body[dir=ltr] #rules label > span { margin-right: 5px; }
+body[dir=rtl] #rules label > span { margin-left: 5px; }
+
 #rules label > input[type=checkbox]:checked + span {
 	background: #fbf9fe; color: green;
 }
@@ -54,8 +64,10 @@ a.home > span { font-weight: bold; color: white; margin-right: 2px; }
 	border: 1px solid #cbcbcd; border-radius: 5px; 
 	width: 1em; height: 1em; background: #fbf9fe;
 	font-size: 1.3em; text-align: center;
-	margin-right: 2px;
 }
+body[dir=ltr] #showType span.box { margin-right: 2px; }
+body[dir=rtl] #showType span.box { margin-left: 2px; }
+
 #showType span.box .yes { color: green; }
 #showType span.box .no { color: red; }
 #showType span.box .all { color: #bb0; }
@@ -72,19 +84,24 @@ a.home > span { font-weight: bold; color: white; margin-right: 2px; }
 div.product {
 	width: 220px;
 	border: 2px solid black; border-radius: 8px;
-	padding: 10px 10px 10px 115px; margin: 5px;
+	margin: 5px;
 	vertical-align: top;
 	display: inline-block;
 	min-height: 122px;
 	position: relative;
 	color: black;
 }
+body[dir=ltr] div.product { padding: 10px 10px 10px 115px; }
+body[dir=rtl] div.product { padding: 10px 115px 10px 10px; }
+
 div.product .prodImg {
-	height: 120px; width: 90px; margin-right: 20px;
-	position: absolute; top: 10px; left: 10px;
+	height: 120px; width: 90px;
+	position: absolute; top: 10px;
 	border: 1px solid black; border-radius: 5px;
 	background: white;
 }
+body[dir=ltr] div.product .prodImg { margin-right: 20px; left: 10px; }
+body[dir=rtl] div.product .prodImg { margin-left: 20px; right: 10px; }
 
 div.product .prodImg > div { 
 	border-radius: 5px;
@@ -127,6 +144,7 @@ div.product .name { font-weight: bold; padding-top: 5px; }
 
 
 a.edit {
+	cursor: pointer;
 	-moz-user-select: none;
 	-khtml-user-select: none;
 	-webkit-user-select: none;
@@ -140,3 +158,7 @@ table.editProduct tr td { padding: 2px; }
 span.highlight { background: rgba(255,255,200,0.7); }
 
 .displayNone { display: none !important; }
+
+/* override bootstrap */
+
+body[dir=rtl] ul, body[dir=rtl] ol { margin: 0 25px 10px 0; }

@@ -15,10 +15,10 @@
 		{{> search}} &nbsp;
 
 		<span id="rules">
-			Rules: &nbsp;
+			{{mf 'Rules' 'Rules'}}: &nbsp;
 		  <label>
 				<input type="checkbox" value="for" checked="checked" disabled>
-				<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>Vegan
+				<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>{{mf 'Vegan' 'Vegan'}}
 			</label>
 		</span>
 
@@ -52,15 +52,15 @@
 		{{#if $.Session.equals 'QUERY_UPC' ''}}
 
 			{{#if $.Session.equals 'QUERY_SEARCH' ''}}
-				Everything
+				{{mf 'Everything' 'Everything'}}
 			{{else}}
 				'{{$.Session.get 'QUERY_SEARCH'}}'
 			{{/if}}
 
-			in
+			{{mf 'in_category' 'in'}}
 
 			{{#if $.Session.equals 'QUERY_BROWSE' ''}}
-				All Categories
+				{{mf 'all_categories' 'All Categories'}}
 			{{else}}
 				'{{browseName}}'
 			{{/if}}
@@ -81,9 +81,9 @@
 			<span class="yes">✔</span>
 			<span class="no">✗</span>
 		</span>
-  		<span class="all">Show All</span>
-  		<span class="yes">Passes</span>
-  		<span class="no">Fails</span>
+  		<span class="all">{{mf 'show_all' 'Show All'}}</span>
+  		<span class="yes">{{mf 'show_yes' 'Passes'}}</span>
+  		<span class="no">{{mf 'show_no' 'Fails'}}</span>
   	</select>
 	</label>
 	{{/constant}}
@@ -92,11 +92,11 @@
 <template name="actions">
 	{{#if currentUser}}
   	<p>
-  		<a id="add-product">Add new Product</a> |
-  		<a href="/ingredients">Edit Ingredients</a>
+  		<a id="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
+  		<a href="/ingredients">{{mf 'edit_ingredients' 'Edit Ingredients'}}</a>
   	</p>
   {{else}}
-  	<p>Log in to add/edit products</p>
+  	<p>{{mf 'login_to_edit' 'Log in to add/edit products'}}</p>
   {{/if}}
 </template>
 
@@ -114,7 +114,7 @@
 </template>
 
 <template name="app">
-	<h3>Apps</h3>
+	<h3>{{mf 'heading_Apps' 'Apps'}}</h3>
 	<p>Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
 	product barcodes in the shop and see if you can eat it. Demo:</p>
 	<iframe width="420" height="315" src="//www.youtube.com/embed/pM_yGG18u6I" frameborder="0" allowfullscreen></iframe>
@@ -131,7 +131,8 @@
 					</div>
 					<div class="status status-{{caneat}}"></div>
 
-					<p><span class="name">{{name}}</span> {{#if currentUser}}<a class="edit">edit</a>{{/if}}</p>
+					<p><span class="name">{{getLang 'name'}}</span>
+						{{#if currentUser}}<a class="edit">{{mf 'edit' 'edit'}}</a>{{/if}}</p>
 					<ul>
 					{{#each caneatMsg}}
 						{{#with this}}

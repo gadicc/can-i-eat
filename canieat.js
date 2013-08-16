@@ -175,18 +175,27 @@ if (Meteor.isClient) {
           case 'yes':
             if (caneat != 'no' || caneat != 'maybe') {
               caneat='yes'; 
-              out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
+              out.push({
+                note: getLang(this, 'props.'+props[i]+'.note'),
+                source: getLang(this, 'props.'+props[i]+'.source')
+              });
             }
             break;
           case 'maybe':
             if (caneat != 'no') {
               caneat='maybe';
-              out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
+              out.push({
+                note: getLang(this, 'props.'+props[i]+'.note'),
+                source: getLang(this, 'props.'+props[i]+'.source')
+              });
             }
             break;
           case 'no':
             caneat='no';
-            out.push({note: this.props[props[i]].note, source: this.props[props[i]].source});
+            out.push({
+              note: getLang(this, 'props.'+props[i]+'.note'),
+              source: getLang(this, 'props.'+props[i]+'.source')
+            });
             break;
         }
       }
