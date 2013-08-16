@@ -27,6 +27,7 @@
 		{{> showType}}
 
   	<div id="topDivRight">
+  		{{> langPicker}} |
 	  	{{loginButtons}}
 	  </div>
 	</div>
@@ -36,6 +37,10 @@
 	  {{> modalStandard}}
 	</div>
 </body>
+
+<template name="langPicker">
+	<a>{{lang}}</a>
+</template>
 
 <template name="main">
 		{{> heading}}
@@ -115,8 +120,8 @@
 
 <template name="app">
 	<h3>{{mf 'heading_Apps' 'Apps'}}</h3>
-	<p>Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
-	product barcodes in the shop and see if you can eat it. Demo:</p>
+	<p>{{mf 'app_download' 'Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
+	product barcodes in the shop and see if you can eat it. Demo:'}}</p>
 	<iframe width="420" height="315" src="//www.youtube.com/embed/pM_yGG18u6I" frameborder="0" allowfullscreen></iframe>
 </template>
 

@@ -99,7 +99,7 @@ if (Meteor.isClient) {
 
     select.select2({
       query: function(query) { query.callback({results: allCategories}); },
-      placeholder: 'All Categories', allowClear: true,
+      placeholder: mf('All Categories', null, 'All Categories'), allowClear: true,
       initSelection: function(element, callback) {
         var id = element.val();
         var obj = Categories.findOne(id);
@@ -449,6 +449,15 @@ if (Meteor.isClient) {
   Template['add-product'].companies = function() {
     return Companies.find({}, {sort: {name: 1}}).fetch();
   }
+
+  Template.langPicker.events({
+    'click a': function() {
+      var lang = Session.get('lang');
+      lang = lang == 'he' ? 'en' : 'he';
+      Session.set('lang', lang);
+      Session.set('locale', lang);
+    }
+  });
 
   var alls = {
     allIngredients: { collection: Ingredients },
