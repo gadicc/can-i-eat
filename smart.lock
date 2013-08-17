@@ -9,7 +9,8 @@
       "handlebar-helpers": {},
       "messageformat": {
         "path": "../../smart/messageformat"
-      }
+      },
+      "flag-webicons": {}
     },
     "packages": {
       "x-editable-bootstrap": {
@@ -40,6 +41,11 @@
       "messageformat": {
         "path": "../../smart/messageformat"
       },
+      "flag-webicons": {
+        "git": "https://github.com/gadicohen/meteor-flag-webicons.git",
+        "tag": "v1.0.1",
+        "commit": "387185bc00e649ccd652498f9d53b3685673979c"
+      },
       "page-js-ie-support": {
         "git": "https://github.com/tmeasday/meteor-page-js-ie-support.git",
         "tag": "v1.3.5",
@@ -49,6 +55,11 @@
         "git": "https://github.com/tmeasday/meteor-HTML5-History-API.git",
         "tag": "v4.0.0",
         "commit": "dc4965f1424cfca625ec3fbea17eace03f8e32c5"
+      },
+      "modernizr-meteor": {
+        "git": "https://github.com/ckir/modernizr-meteor.git",
+        "tag": "v2.6.2",
+        "commit": "391ca2a3beff3cd2b0e1099cb2d744b5a2e8a73e"
       }
     }
   }

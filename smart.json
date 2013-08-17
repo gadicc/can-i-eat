@@ -6,7 +6,8 @@
     "router": {},
     "handlebar-helpers": {},
     "messageformat": {
-	"path": "/home/dragon/www/smart/messageformat"
-    }
+      "path": "/home/dragon/www/smart/messageformat"
+    },
+    "flag-webicons": {}
   }
 }

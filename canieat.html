@@ -46,7 +46,7 @@
 </template>
 
 <template name="langPicker">
-	<a>{{lang}}</a>
+	<a><i style="height: 14px; width: 28px; vertical-align: middle;" class="flag-webicon small {{#if $eq lang 'he'}}israel{{else}}united-kingdom{{/if}}"></i></a>
 </template>
 
 <template name="main">
@@ -129,7 +129,9 @@
 	<h3>{{mf 'heading_Apps' 'Apps'}}</h3>
 	<p>{{mf 'app_download' 'Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
 	product barcodes in the shop and see if you can eat it. Demo:'}}</p>
+	{{#constant}}
 	<iframe width="420" height="315" src="//www.youtube.com/embed/pM_yGG18u6I" frameborder="0" allowfullscreen></iframe>
+	{{/constant}}
 </template>
 
 <template name="products">
