@@ -145,6 +145,7 @@ if (Meteor.isClient) {
   });
 
   Template['edit-product'].props = templateProps;
+  Template['edit-product-trans'].props = templatePropsTrans;
 
   Template.products.caneat = function() {
     var caneat = null;
@@ -420,7 +421,24 @@ if (Meteor.isClient) {
       $('#modalStandard .btn-primary').click(function() {
           mTpl.product.save();
       });
+    },
+    'click a.edit-trans': function(event) {
+      var mTpl = Template['edit-product-trans'];
+      mTpl.product = new Product(this._id);
+      var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.product);
+      console.log(mTpl.product);
+
+      modal({title: mf('edit_prod_trans', null, 'Edit Product Translation'),
+        body: new Handlebars.SafeString(mTpl()) });
+
+      // anything that doesn't already have one
+      $('#edit-product-trans span').editable({ success: editableSuccessTpl });
+
+      $('#modalStandard .btn-primary').click(function() {
+          mTpl.product.save();
+      });
     }
+
   });
 
 
@@ -433,6 +451,17 @@ if (Meteor.isClient) {
     if ($this.hasClass('prop'))
       propName = 'props.' + $this.parents('[data-prop]').data('prop') + '.' + propName;
 
+    item.update(propName, newValue);
+  }
+  editableTransSuccess = function(item, response, newValue, self) {
+    if (!self) self = this;
+    var $this = $(self), propName = $this.data('id');
+    console.log('editableTransSuccess');
+
+    if ($this.hasClass('prop'))
+      propName = 'props.' + $this.parents('[data-prop]').data('prop') + '.' + propName;
+
+    propName = 'trans.he.' + propName;
     item.update(propName, newValue);
   }
 
