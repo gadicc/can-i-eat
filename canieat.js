@@ -53,7 +53,14 @@ if (Meteor.isClient) {
     } else {
       search = Session.get('QUERY_SEARCH');
       browse = Session.get('QUERY_BROWSE');
-      if (search) query.name = { $regex: queryToRegExp(search), $options: 'i' };
+      if (search) {
+        var obj = {};
+        var langs = _.keys(MessageFormatCache.strings);
+        for (var i=0; i < langs.length; i++)
+          obj['trans.'+langs[i]+'.name'] = { $regex: queryToRegExp(search), $options: 'i' };
+        query['$or'] = [ { name : { $regex: queryToRegExp(search), $options: 'i' } }, obj ];
+      }
+      console.log(query)
       if (browse) query.categories = browse;
     }
     return Products.find(query, { sort: { name: 1 } }).fetch();
