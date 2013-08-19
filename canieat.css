@@ -164,3 +164,10 @@ a.langPicker > i { height: 14px !important; width: 28px !important; vertical-ali
 /* override bootstrap */
 
 body[dir=rtl] ul, body[dir=rtl] ol { margin: 0 25px 10px 0; }
+
+/* override packages */
+
+body[dir=rtl] .select2-container .select2-choice abbr { right: inherit; left: 26px; top: 7px; }
+body[dir=rtl] .select2-container.select2-allowclear .select2-choice span { margin-right: 10px; margin-left: 42px }
+body[dir=rtl] .select2-container .select2-choice div { right: inherit; left: 0; border-radius: 4px 0 0 4px; border-left: none; border-right: 1px solid #aaa; }
+body[dir=rtl] .select2-results { padding: 0 4px 0 0; margin: 4px 0 4px 4px; }
