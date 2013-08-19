@@ -3,11 +3,13 @@
 	<table id="ingredients">
 			<tr>
 				<th>Name</th>
+				<th>Actions</th>
 				<th>Vegan</th>
 			</tr>
 		{{#each ingredients}}
 			<tr>
-				<td><a class="edit">{{name}}</a></td>
+				<td>{{name}}</td>
+				<td><a class="edit">edit</a> <a class="edit-trans">trans</a></td>
 				{{props}}
 			</tr>
 		{{/each}}
@@ -23,6 +25,23 @@
 				<td><br /></td></tr>
 			{{props}}
 		</table>
+		{{/with}}
+	</form>
+</template>
+
+<template name="edit-ingredient-trans">
+	<form id="edit-ingredient-trans">
+		<select data-product-id="lang">
+				<option value="he">Hebrew</option>
+				<!-- <option value="en">English</option> -->
+		</select>
+		{{#with ingredient}}
+			<table class="editProduct" data-product-id="{{_id}}">
+			<tr><td>Name:</td><td><span data-id="name">{{getLang 'name' 'he' true}}</span></td></tr>
+			<tr><td><br /><b><u>Overrides:</u></b></td>
+				<td><br />Translate existing overrides</td></tr>
+			{{props}}
+			</table>
 		{{/with}}
 	</form>
 </template>

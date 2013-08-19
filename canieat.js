@@ -24,7 +24,7 @@ function select2check(ids, collection, select2data) {
       if (doc) {
         ids[i] = doc._id;
       } else {
-        id = collection.insert({name: ids[i]});
+        id = collection.insert({name: ids[i], lang: Session.get('lang')});
         select2data.opts.data.push({ id: id, text: ids[i] });
         ids[i] = id;
       }
@@ -46,6 +46,7 @@ if (Meteor.isClient) {
   Template.products.products = function() {
     var upc, search, browse;
     var query = {};
+    var dep = Session.get('lang');
 
     upc = Session.get('QUERY_UPC');
     if (upc) {
@@ -60,11 +61,14 @@ if (Meteor.isClient) {
           obj['trans.'+langs[i]+'.name'] = { $regex: queryToRegExp(search), $options: 'i' };
         query['$or'] = [ { name : { $regex: queryToRegExp(search), $options: 'i' } }, obj ];
       }
-      console.log(query)
       if (browse) query.categories = browse;
     }
-    return Products.find(query, { sort: { name: 1 } }).fetch();
+    return Products.find(query, { sort: { name: 1 }});
+    var products = Products.find(query).fetch();
+    LangM1.flattenCol(products);
+    return products;
   }
+  Template.products.log = function(text) { console.log(text); }
 
   Template.products.ready = function() {
     return _.all(allSubs, function(sub) {
@@ -85,6 +89,45 @@ if (Meteor.isClient) {
         );
       });
     }
+
+    return;
+    domSort('#productsDiv', function(a, b) {
+      var c = $(a).find('span.name').html().toLowerCase(), d = $(b).find('span.name').html().toLowerCase();
+      // http://stackoverflow.com/questions/2167602/optimum-way-to-compare-strings-in-javascript
+      return c < d ? -1 : c > d ? 1 : 0;
+    });
+  }
+
+  Handlebars.registerHelper('ts', function() {
+    return new Date().getTime();
+  });
+
+  domSort = function(listEl, sortFunc) {
+    var node, list, next, dupes = {}, id;
+    var moves = 0;
+    if (typeof listEl == 'string')
+      listEl = $(listEl)[0];
+    list = listEl.childNodes;
+
+    // remove text nodes
+    for (var i=0; i < list.length; i++)
+      if (list[i].nodeType == 3)
+        listEl.removeChild(list[i--])
+
+    node = list[0]; next = list[1];
+    while (next) {
+      next = node.nextSibling;
+      if (node.tagName == 'DIV')
+      for (var n=node, n2=node.nextSibling; n2; n=n2, n2=n.nextSibling) {
+        if (sortFunc(n2, n) < 0) {
+          listEl.insertBefore(n2, n);
+          moves++;
+          break;
+        }
+      }
+      node = next;
+    }
+    console.log('domSort in ' + moves + ' moves');
   }
 
   Template.browse.rendered = function() {
@@ -244,18 +287,30 @@ if (Meteor.isClient) {
             case 'yes':
               if (caneat != 'no' || caneat != 'maybe') {
                 caneat='yes';
-                out.push({name: ingredient.name, note: ingredient.props[props[i]].note, source: ingredient.props[props[i]].source });
+                out.push({
+                  name: getLang(ingredient, 'name'),
+                  note: getLang(ingredient, 'props.'+props[i]+'.note'),
+                  source: getLang(ingredient, 'props.'+props[i]+'.source')
+                });
               }
               break;
             case 'maybe':
               if (caneat != 'no') {
                 caneat='maybe';
-                out.push({name: ingredient.name, note: ingredient.props[props[i]].note, source: ingredient.props[props[i]].source });                
+                out.push({
+                  name: getLang(ingredient, 'name'),
+                  note: getLang(ingredient, 'props.'+props[i]+'.note'),
+                  source: getLang(ingredient, 'props.'+props[i]+'.source')
+                });
               }
               break;
             case 'no':
               caneat='no';
-              out.push({name: ingredient.name, note: ingredient.props[props[i]].note, source: ingredient.props[props[i]].source });
+                out.push({
+                  name: getLang(ingredient, 'name'),
+                  note: getLang(ingredient, 'props.'+props[i]+'.note'),
+                  source: getLang(ingredient, 'props.'+props[i]+'.source')
+                });
               break;
           }          
         }
@@ -316,7 +371,8 @@ if (Meteor.isClient) {
           categories: $('#add-product-categories').val().split(','),
           barcode: $('#add-product-barcode').val(),
           ingredients: $('#add-product-ingredients').val().split(','),
-          picURL: $('#add-product-picURL').val()
+          picURL: $('#add-product-picURL').val(),
+          lang: Session.get('lang')
         });
         mTpl.product.save();
       });
@@ -339,7 +395,7 @@ if (Meteor.isClient) {
 
     for (var i=0, id = ids[0]; i < ids.length; id = ids[++i]) {
       if (collection.find(id).count() == 0) {
-        name = id; id = collection.insert({name: name});
+        name = id; id = collection.insert({name: name, lang: Session.get('lang')});
         source.push({ id: id, text: name });
         added = true; ids[i] = id;
       }
@@ -372,7 +428,7 @@ if (Meteor.isClient) {
           ids[i] = doc._id;
           changed = true;
         } else {
-          id = collection.insert({name: ids[i]});
+          id = collection.insert({name: ids[i], lang: Session.get('lang')});
           html.push(ids[i]);
           ids[i] = id;
           changed = true;          

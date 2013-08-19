@@ -6,3 +6,5 @@
 
 #ingredients th { background: #555; color: white; }
 #ingredients span[title] { border-bottom: 1px black dotted; }
+
+.edit-trans { cursor: pointer; }

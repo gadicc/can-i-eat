@@ -17,7 +17,7 @@ if (Meteor.isClient) {
 			out += '<td>';
 			if (this.props && this.props[prop]) {
 				propObj = this.props[props[i]];
-				out += '<span title="x">' + propObj.status + '</span>';
+				out += '<span title="'+propObj.note+'">' + propObj.status + '</span>';
 				if (propObj.source)
 					out += ' <a target="_blank" href="' + propObj.source + '">(?)</a>';
 			}
@@ -29,6 +29,8 @@ if (Meteor.isClient) {
 	Template.ingredients.rendered = function() {
 		$('#ingredients span[title]').tooltip();
 	}
+
+	Template['edit-ingredient-trans'].props = templatePropsTrans;
 
 	Template.ingredients.events({
 		'click a.edit': function() {
@@ -51,7 +53,23 @@ if (Meteor.isClient) {
 			$('#modalStandard .btn-primary').click(function() {
 			  mTpl.ingredient.save();
 			});
-		}
+		},
+	    'click a.edit-trans': function(event) {
+	      var mTpl = Template['edit-ingredient-trans'];
+	      mTpl.ingredient = new Ingredient(this._id);
+	      console.log(mTpl.ingredient);
+	      var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.ingredient);
+
+	      modal({title: mf('edit_ingredient_trans', null, 'Edit Ingredient Translation'),
+	        body: new Handlebars.SafeString(mTpl()) });
+
+	      // anything that doesn't already have one
+	      $('#edit-ingredient-trans span').editable({ success: editableSuccessTpl });
+
+	      $('#modalStandard .btn-primary').click(function() {
+	          mTpl.ingredient.save();
+	      });
+	    }		
 	});
 
 }

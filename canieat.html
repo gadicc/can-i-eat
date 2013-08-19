@@ -50,6 +50,7 @@
 </template>
 
 <template name="main">
+		{{> community-header}}
 		{{> heading}}
 		{{> products}}
 	  <br />
@@ -57,6 +58,17 @@
 	  {{> app}}
 	  {{> todo}}
 	  <!-- bisli bbq 7290000066165 -->
+</template>
+
+<template name="community-header">
+	<div>{{mf 'community_maintained' 'Community maintained site... get involved!'}} &nbsp;
+	{{#if currentUser}}
+  		<a id="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
+  		<a href="/ingredients">{{mf 'edit_ingredients' 'Edit Ingredients'}}</a>
+  {{else}}
+  	{{mf 'login_to_edit' 'Log in to add/edit products'}}
+  {{/if}}
+	</div>
 </template>
 
 <template name="heading">
@@ -139,13 +151,14 @@
 		{{#if ready}}
 			{{#if products}}
 				{{#each products}}
-				<div class="product caneat-{{caneat}} {{show caneat}}">
+				{{log _id}}
+				<div class="product caneat-{{caneat}} {{show caneat}}" data-id="{{_id}}" data-ts="{{ts}}">
 					<div class="prodImg">
 						<div style="background-image: url({{picURL}});"></div>
 					</div>
 					<div class="status status-{{caneat}}"></div>
 
-					<p><span class="name">{{getLang 'name'}}</span>
+					<p><span class="name">{{name}}</span>
 						{{#if currentUser}}
 							<a class="edit">{{mf 'edit' 'edit'}}</a>
 							<a class="edit-trans">{{mf 'trans' 'trans'}}</a>
