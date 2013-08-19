@@ -18,7 +18,7 @@
 
 <template name="edit-ingredient">
 	<form id="edit-ingredient">
-		{{#with ingredient}}
+		{{#with item}}
 		<table class="editProduct" data-product-id="{{_id}}">
 			<tr><td>Name:</td><td><span data-id="name">{{name}}</span></td></tr>
 			<tr><td><br /><b><u>Rules</u></b></td>
@@ -31,7 +31,7 @@
 
 <template name="edit-ingredient-trans">
 	<form id="edit-ingredient-trans">
-		{{#with ingredient}}		
+		{{#with item}}		
 			<select data-product-id="lang">
 				{{#each langsButCurrent}}
 					<option value="{{this}}">{{mf this}}</option>

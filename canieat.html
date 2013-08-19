@@ -226,7 +226,7 @@
 		<a href="http://www.foodsdictionary.co.il/" target="_blank">foodsdictionary</a> for picture, barcode,
 		and nutrional information.</p>
 	<form id="edit-product">
-		{{#with product}}
+		{{#with item}}
 		<table class="editProduct" data-product-id="{{_id}}">
 		<tr><td>Name:</td><td><span data-id="name">{{name}}</span></td></tr>
 		<tr><td>Company:</td><td><span data-type="select2" data-value="{{company}}" data-id="company"></span><td></tr>
@@ -245,7 +245,7 @@
 
 <template name="edit-product-trans">
 	<form id="edit-product-trans">
-		{{#with product}}
+		{{#with item}}
 		<select data-id="lang">
 				{{#each langsButCurrent}}
 					<option value="{{this}}">{{mf this}}</option>

@@ -330,7 +330,7 @@ if (Meteor.isClient) {
     console.log('add product rendered');
     var mTpl = Template['add-product'];
     var editableSuccessTpl = _.partial(editableSuccess, mTpl);
-    mTpl.product = new Product(this._id);
+    mTpl.item = new Product(this._id);
 
     var el, select2s = {
       '#add-product-company': {
@@ -361,8 +361,8 @@ if (Meteor.isClient) {
     }
 
     $('#modalStandard .btn-primary').click(function() {
-      console.log(mTpl.product);
-      mTpl.product.update({
+      console.log(mTpl.item);
+      mTpl.item.update({
         name: $('#add-product-name').val(),
         company: $('#add-product-company').val(),
         categories: $('#add-product-categories').val().split(','),
@@ -371,14 +371,14 @@ if (Meteor.isClient) {
         picURL: $('#add-product-picURL').val(),
         lang: Session.get('lang')
       });
-      mTpl.product.save();
+      mTpl.item.save();
     });
   }
 
   function addProduct(event) {
     var mTpl = Template['add-product'];
     var editableSuccessTpl = _.partial(editableSuccess, mTpl);
-    mTpl.product = new Product(this._id);
+    mTpl.item = new Product(this._id);
 
     modal({title: 'Add Product',
       body: function() { return new Handlebars.SafeString(mTpl()); } });
@@ -413,7 +413,7 @@ if (Meteor.isClient) {
       }
     }
 
-    editableSuccess(mTpl.product, null, ids, self);
+    editableSuccess(mTpl.item, null, ids, self);
     if (added) {
       console.log({ newValue: ids });
       return { newValue: ids };
@@ -459,18 +459,18 @@ if (Meteor.isClient) {
 
   Template['edit-product'].rendered = function() {
     var mTpl = Template['edit-product'];
-    var editableSuccessTpl = _.partial(editableSuccess, mTpl.product);
+    var editableSuccessTpl = _.partial(editableSuccess, mTpl.item);
 
     $('#edit-product span[data-id="company"]').editable({
       source: allCompanies,
       select2: { createSearchChoice: defaultCreateSearchChoice },
-      display: function(ids, source) { select2display(ids, source, Companies, this, mTpl.product) },
+      display: function(ids, source) { select2display(ids, source, Companies, this, mTpl.item) },
       //success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
     });
     $('#edit-product span[data-id="categories"]').editable({
       source: allCategories,
       select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
-      display: function(ids, source) { select2display(ids, source, Categories, this, mTpl.product) },
+      display: function(ids, source) { select2display(ids, source, Categories, this, mTpl.item) },
       //success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
     });
     $('#edit-product span[data-id="ingredients"]').editable({
@@ -478,7 +478,7 @@ if (Meteor.isClient) {
           width: '400px', multiple: true,
           createSearchChoice: defaultCreateSearchChoice },
       source: allIngredients, mode: 'inline',
-      display: function(ids, source) { select2display(ids, source, Ingredients, this, mTpl.product) },
+      display: function(ids, source) { select2display(ids, source, Ingredients, this, mTpl.item) },
       //success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
     });
     $('#edit-product span[data-id="status"]').editable({
@@ -489,31 +489,31 @@ if (Meteor.isClient) {
     $('#edit-product span').editable({ success: editableSuccessTpl });
 
     $('#modalStandard .btn-primary').click(function() {
-        mTpl.product.save();
+        mTpl.item.save();
     });
   }
 
   Template['edit-product-trans'].rendered = function() {
     var mTpl = Template['edit-product-trans'];
-    var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.product);
+    var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.item);
 
     // anything that doesn't already have one
     $('#edit-product-trans span').editable({ success: editableSuccessTpl });
 
     $('#modalStandard .btn-primary').click(function() {
-        mTpl.product.save();
+        mTpl.item.save();
     });
   }
 
   Template.products.events({
     'click a.edit': function(event) {
       var mTpl = Template['edit-product'];
-      mTpl.product = new Product(this._id); 
+      mTpl.item = new Product(this._id); 
       modal({title: 'Edit Product', body: function() { return new Handlebars.SafeString(mTpl()) }});
     },
     'click a.edit-trans': function(event) {
       var mTpl = Template['edit-product-trans'];
-      mTpl.product = new Product(this._id);
+      mTpl.item = new Product(this._id);
       modal({title: mf('edit_prod_trans', null, 'Edit Product Translation'),
         body: function() { return new Handlebars.SafeString(mTpl()) } });
     }
