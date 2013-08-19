@@ -8,8 +8,9 @@
 
 	<div id="mainDiv">
 		{{#isolate}}{{renderPage}}{{/isolate}}
-	  {{> modalStandard}}
 	</div>
+
+  {{> modalPlaceHolder}}
 </body>
 
 <template name="topDiv">
@@ -98,7 +99,6 @@
 </template>
 
 <template name="showType">
-	{{#constant}}
 	<span id="showType" data-select="{{$.Session.get 'showType'}}">
 		<span class="box">
 			<span class="all">✱</span>
@@ -106,11 +106,10 @@
 			<span class="no">✗</span>
 		</span>
   		<span class="all">{{mf 'show_all' 'Show All'}}</span>
-  		<span class="yes">{{mf 'show_yes' 'Passes'}}</span>
-  		<span class="no">{{mf 'show_no' 'Fails'}}</span>
+  		<span class="yes">{{mf 'show_yes' 'Only Passes'}}</span>
+  		<span class="no">{{mf 'show_no' 'Only Fails'}}</span>
   	</select>
 	</label>
-	{{/constant}}
 </template>
 
 <template name="actions">
@@ -203,6 +202,7 @@
 </template>
 
 <template name="add-product">
+	{{#constant}}
 	<p>Try searching on <a href="http://foodmarket.co.il/" target="_blank">foodmarket</a> and 
 		<a href="http://www.foodsdictionary.co.il/" target="_blank">foodsdictionary</a> for picture, barcode,
 		and nutrional information.</p>
@@ -217,9 +217,11 @@
 		{{props}}
 		</table>
 	</form>
+	{{/constant}}
 </template>
 
 <template name="edit-product">
+	{{#constant}}
 	<p>Try searching on <a href="http://foodmarket.co.il/" target="_blank">foodmarket</a> and 
 		<a href="http://www.foodsdictionary.co.il/" target="_blank">foodsdictionary</a> for picture, barcode,
 		and nutrional information.</p>
@@ -238,17 +240,20 @@
 		</table>
 		{{/with}}
 	</form>
+	{{/constant}}
 </template>
 
 <template name="edit-product-trans">
 	<form id="edit-product-trans">
-		<select data-product-id="lang">
-				<option value="he">Hebrew</option>
-				<!-- <option value="en">English</option> -->
-		</select>
 		{{#with product}}
+		<select data-id="lang">
+				{{#each langsButCurrent}}
+					<option value="{{this}}">{{mf this}}</option>
+				{{/each}}
+					<!-- <option value="extra">extra_value</option> -->
+		</select>
 			<table class="editProduct" data-product-id="{{_id}}">
-			<tr><td>Name:</td><td><span data-id="name">{{getLang 'name' 'he' true}}</span></td></tr>
+			<tr><td>Name:</td><td><span data-id="name">{{getLang 'name' destLang true}}</span></td></tr>
 			<tr><td><br /><b><u>Overrides:</u></b></td>
 				<td><br />Translate existing overrides</td></tr>
 			{{props}}
@@ -257,6 +262,12 @@
 	</form>
 </template>
 
+
+<template name="modalPlaceHolder">
+	<!-- start modalPlaceHolder -->
+	{{modal}}
+	<!-- end modalPlaceHolder -->
+</template>
 
 <template name="modalStandard">
     <div class="modal hide fade" id="modalStandard">

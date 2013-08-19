@@ -31,13 +31,14 @@
 
 <template name="edit-ingredient-trans">
 	<form id="edit-ingredient-trans">
-		<select data-product-id="lang">
-				<option value="he">Hebrew</option>
-				<!-- <option value="en">English</option> -->
-		</select>
-		{{#with ingredient}}
+		{{#with ingredient}}		
+			<select data-product-id="lang">
+				{{#each langsButCurrent}}
+					<option value="{{this}}">{{mf this}}</option>
+				{{/each}}
+			</select>
 			<table class="editProduct" data-product-id="{{_id}}">
-			<tr><td>Name:</td><td><span data-id="name">{{getLang 'name' 'he' true}}</span></td></tr>
+			<tr><td>Name:</td><td><span data-id="name">{{getLang 'name' destLang true}}</span></td></tr>
 			<tr><td><br /><b><u>Overrides:</u></b></td>
 				<td><br />Translate existing overrides</td></tr>
 			{{props}}

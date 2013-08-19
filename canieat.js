@@ -326,13 +326,11 @@ if (Meteor.isClient) {
     return (type == 'all' || caneat == type) ? '' : 'displayNone';
   };
 
-  function addProduct(event) {
+  Template['add-product'].rendered = function() {
+    console.log('add product rendered');
     var mTpl = Template['add-product'];
     var editableSuccessTpl = _.partial(editableSuccess, mTpl);
     mTpl.product = new Product(this._id);
-
-    modal({title: 'Add Product',
-      body: new Handlebars.SafeString(mTpl()) });
 
     var el, select2s = {
       '#add-product-company': {
@@ -375,6 +373,15 @@ if (Meteor.isClient) {
       });
       mTpl.product.save();
     });
+  }
+
+  function addProduct(event) {
+    var mTpl = Template['add-product'];
+    var editableSuccessTpl = _.partial(editableSuccess, mTpl);
+    mTpl.product = new Product(this._id);
+
+    modal({title: 'Add Product',
+      body: function() { return new Handlebars.SafeString(mTpl()); } });
   }
 
   Template['community-header'].events({
@@ -450,65 +457,69 @@ if (Meteor.isClient) {
     }
   }
 
+  Template['edit-product'].rendered = function() {
+    var mTpl = Template['edit-product'];
+    var editableSuccessTpl = _.partial(editableSuccess, mTpl.product);
+
+    $('#edit-product span[data-id="company"]').editable({
+      source: allCompanies,
+      select2: { createSearchChoice: defaultCreateSearchChoice },
+      display: function(ids, source) { select2display(ids, source, Companies, this, mTpl.product) },
+      //success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
+    });
+    $('#edit-product span[data-id="categories"]').editable({
+      source: allCategories,
+      select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
+      display: function(ids, source) { select2display(ids, source, Categories, this, mTpl.product) },
+      //success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
+    });
+    $('#edit-product span[data-id="ingredients"]').editable({
+      select2: {
+          width: '400px', multiple: true,
+          createSearchChoice: defaultCreateSearchChoice },
+      source: allIngredients, mode: 'inline',
+      display: function(ids, source) { select2display(ids, source, Ingredients, this, mTpl.product) },
+      //success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
+    });
+    $('#edit-product span[data-id="status"]').editable({
+      source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
+    });
+
+    // anything that doesn't already have one
+    $('#edit-product span').editable({ success: editableSuccessTpl });
+
+    $('#modalStandard .btn-primary').click(function() {
+        mTpl.product.save();
+    });
+  }
+
+  Template['edit-product-trans'].rendered = function() {
+    var mTpl = Template['edit-product-trans'];
+    var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.product);
+
+    // anything that doesn't already have one
+    $('#edit-product-trans span').editable({ success: editableSuccessTpl });
+
+    $('#modalStandard .btn-primary').click(function() {
+        mTpl.product.save();
+    });
+  }
+
   Template.products.events({
     'click a.edit': function(event) {
       var mTpl = Template['edit-product'];
-      mTpl.product = new Product(this._id);
-      var editableSuccessTpl = _.partial(editableSuccess, mTpl.product);
-
-      modal({title: 'Edit Product',
-        body: new Handlebars.SafeString(mTpl()) });
-
-      $('#edit-product span[data-id="company"]').editable({
-        source: allCompanies,
-        select2: { createSearchChoice: defaultCreateSearchChoice },
-        display: function(ids, source) { select2display(ids, source, Companies, this, mTpl.product) },
-        //success: function(response, newValue) { return addDocSuccess(Companies, newValue, this, mTpl); }
-      });
-      $('#edit-product span[data-id="categories"]').editable({
-        source: allCategories,
-        select2: { createSearchChoice: defaultCreateSearchChoice, multiple: true },
-        display: function(ids, source) { select2display(ids, source, Categories, this, mTpl.product) },
-        //success: function(response, newValue) { return addDocSuccess(Categories, newValue, this, mTpl); }
-      });
-      $('#edit-product span[data-id="ingredients"]').editable({
-        select2: {
-            width: '400px', multiple: true,
-            createSearchChoice: defaultCreateSearchChoice },
-        source: allIngredients, mode: 'inline',
-        display: function(ids, source) { select2display(ids, source, Ingredients, this, mTpl.product) },
-        //success: function(response, newValue) { return addDocSuccess(Ingredients, newValue, this, mTpl); }
-      });
-      $('#edit-product span[data-id="status"]').editable({
-        source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
-      });
-
-      // anything that doesn't already have one
-      $('#edit-product span').editable({ success: editableSuccessTpl });
-
-      $('#modalStandard .btn-primary').click(function() {
-          mTpl.product.save();
-      });
+      mTpl.product = new Product(this._id); 
+      modal({title: 'Edit Product', body: function() { return new Handlebars.SafeString(mTpl()) }});
     },
     'click a.edit-trans': function(event) {
       var mTpl = Template['edit-product-trans'];
       mTpl.product = new Product(this._id);
-      var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.product);
-      console.log(mTpl.product);
-
       modal({title: mf('edit_prod_trans', null, 'Edit Product Translation'),
-        body: new Handlebars.SafeString(mTpl()) });
-
-      // anything that doesn't already have one
-      $('#edit-product-trans span').editable({ success: editableSuccessTpl });
-
-      $('#modalStandard .btn-primary').click(function() {
-          mTpl.product.save();
-      });
+        body: function() { return new Handlebars.SafeString(mTpl()) } });
     }
-
   });
 
+  transTemplate(Template['edit-product-trans']);
 
   editableSuccess = function(item, response, newValue, self) {
     if (!self) self = this;
@@ -529,7 +540,7 @@ if (Meteor.isClient) {
     if ($this.hasClass('prop'))
       propName = 'props.' + $this.parents('[data-prop]').data('prop') + '.' + propName;
 
-    propName = 'trans.he.' + propName;
+    propName = 'trans.' + Session.get('destLang') + '.' + propName;
     item.update(propName, newValue);
   }
 
@@ -599,16 +610,20 @@ if (Meteor.isClient) {
     }
   });
 
-  modal = function(context, id) {
-      if (!id) id = 'modalStandard';
-      $('#' + id).replaceWith(Template[id](context));
-      $('#' + id).modal('show');
-      $('#' + id).css({
-          width: 'auto',
-          'margin-left': function () {
-              return -($(this).width() / 2);
-          }
-      });
+  modalData = {};
+  Template.modalPlaceHolder.modal = function() {
+    Session.get('modalData');
+    if (!modalData.tplName)
+      return '';
+    var tpl = Template[modalData.tplName];
+    var context = modalData.context;
+    return new Handlebars.SafeString(tpl(context));
+  }
+  modal = function(context, tplName) {
+      if (!tplName) tplName = 'modalStandard';
+      modalData = { tplName: tplName, context: context };
+      Session.set('modalData', new Date().getTime());
+      _.defer(function() { $('#' + tplName).modal('show') });
   }
 
   Session.setDefault('QUERY_UPC', '');

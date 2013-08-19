@@ -36,40 +36,48 @@ if (Meteor.isClient) {
 		'click a.edit': function() {
 			var mTpl = Template['edit-ingredient'];
 			mTpl.ingredient = new Ingredient(this._id);
-			var editableSuccessTpl = _.partial(editableSuccess, mTpl.ingredient);
 
 			modal({
 				title: 'Edit Ingredient',
-				body: new Handlebars.SafeString(mTpl())
-			});
-
-			$('#edit-ingredient span[data-id="status"]').editable({
-				source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
-			});
-
-			// anything that doesn't already have one
-			$('#edit-ingredient span').editable({ success: editableSuccessTpl });
-
-			$('#modalStandard .btn-primary').click(function() {
-			  mTpl.ingredient.save();
+				body: function() { return new Handlebars.SafeString(mTpl()) }
 			});
 		},
 	    'click a.edit-trans': function(event) {
 	      var mTpl = Template['edit-ingredient-trans'];
 	      mTpl.ingredient = new Ingredient(this._id);
-	      console.log(mTpl.ingredient);
-	      var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.ingredient);
 
 	      modal({title: mf('edit_ingredient_trans', null, 'Edit Ingredient Translation'),
-	        body: new Handlebars.SafeString(mTpl()) });
-
-	      // anything that doesn't already have one
-	      $('#edit-ingredient-trans span').editable({ success: editableSuccessTpl });
-
-	      $('#modalStandard .btn-primary').click(function() {
-	          mTpl.ingredient.save();
-	      });
+	        body: function() { return new Handlebars.SafeString(mTpl()); }});
 	    }		
 	});
+
+	Template['edit-ingredient'].rendered = function() {
+		var mTpl = Template['edit-ingredient'];
+		var editableSuccessTpl = _.partial(editableSuccess, mTpl.ingredient);
+
+		$('#edit-ingredient span[data-id="status"]').editable({
+			source: allStatuses, emptytext: 'Unset', success: editableSuccessTpl
+		});
+
+		// anything that doesn't already have one
+		$('#edit-ingredient span').editable({ success: editableSuccessTpl });
+
+		$('#modalStandard .btn-primary').click(function() {
+		  mTpl.ingredient.save();
+		});
+	}
+	Template['edit-ingredient-trans'].rendered = function() {
+		var mTpl = Template['edit-ingredient-trans'];
+		var editableSuccessTpl = _.partial(editableTransSuccess, mTpl.ingredient);
+
+		// anything that doesn't already have one
+		$('#edit-ingredient-trans span').editable({ success: editableSuccessTpl });
+
+		$('#modalStandard .btn-primary').click(function() {
+		  mTpl.ingredient.save();
+		});		
+	}
+
+	transTemplate(Template['edit-ingredient-trans']);
 
 }
