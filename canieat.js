@@ -326,57 +326,62 @@ if (Meteor.isClient) {
     return (type == 'all' || caneat == type) ? '' : 'displayNone';
   };
 
-  Template.actions.events({
-    'click #add-product': function(event) {
-      var mTpl = Template['add-product'];
-      var editableSuccessTpl = _.partial(editableSuccess, mTpl);
-      mTpl.product = new Product(this._id);
+  function addProduct(event) {
+    var mTpl = Template['add-product'];
+    var editableSuccessTpl = _.partial(editableSuccess, mTpl);
+    mTpl.product = new Product(this._id);
 
-      modal({title: 'Add Product',
-        body: new Handlebars.SafeString(mTpl()) });
+    modal({title: 'Add Product',
+      body: new Handlebars.SafeString(mTpl()) });
 
-      var el, select2s = {
-        '#add-product-company': {
-          collection: Companies,
-          data: allCompanies, multiple: false, createSearchChoice: defaultCreateSearchChoice
-        },
-        '#add-product-ingredients': {
-          collection: Ingredients,
-          data: allIngredients, multiple: true, createSearchChoice: defaultCreateSearchChoice
-        },
-        '#add-product-categories': {
-          collection: Categories,
-          data: allCategories, multiple: true, createSearchChoice: defaultCreateSearchChoice
-        }
+    var el, select2s = {
+      '#add-product-company': {
+        collection: Companies,
+        data: allCompanies, multiple: false, createSearchChoice: defaultCreateSearchChoice
+      },
+      '#add-product-ingredients': {
+        collection: Ingredients,
+        data: allIngredients, multiple: true, createSearchChoice: defaultCreateSearchChoice
+      },
+      '#add-product-categories': {
+        collection: Categories,
+        data: allCategories, multiple: true, createSearchChoice: defaultCreateSearchChoice
       }
-      for (elId in select2s) {
-        el = $(elId);
-        if (!el.prev().hasClass('select2-container')) {
-          el.select2(select2s[elId]).on('change', (function(collection) {
-            return function(event) {
-              // check for new items, add them to database and replace value list
-              var val = _.isArray(event.val) ? event.val : [event.val];
-              val = select2check(val, collection, $(event.target).data('select2'));
-              $(event.target).select2('val', val);
-            }
-          })(select2s[elId].collection));
-        }
-      }
-
-      $('#modalStandard .btn-primary').click(function() {
-        console.log(mTpl.product);
-        mTpl.product.update({
-          name: $('#add-product-name').val(),
-          company: $('#add-product-company').val(),
-          categories: $('#add-product-categories').val().split(','),
-          barcode: $('#add-product-barcode').val(),
-          ingredients: $('#add-product-ingredients').val().split(','),
-          picURL: $('#add-product-picURL').val(),
-          lang: Session.get('lang')
-        });
-        mTpl.product.save();
-      });
     }
+    for (elId in select2s) {
+      el = $(elId);
+      if (!el.prev().hasClass('select2-container')) {
+        el.select2(select2s[elId]).on('change', (function(collection) {
+          return function(event) {
+            // check for new items, add them to database and replace value list
+            var val = _.isArray(event.val) ? event.val : [event.val];
+            val = select2check(val, collection, $(event.target).data('select2'));
+            $(event.target).select2('val', val);
+          }
+        })(select2s[elId].collection));
+      }
+    }
+
+    $('#modalStandard .btn-primary').click(function() {
+      console.log(mTpl.product);
+      mTpl.product.update({
+        name: $('#add-product-name').val(),
+        company: $('#add-product-company').val(),
+        categories: $('#add-product-categories').val().split(','),
+        barcode: $('#add-product-barcode').val(),
+        ingredients: $('#add-product-ingredients').val().split(','),
+        picURL: $('#add-product-picURL').val(),
+        lang: Session.get('lang')
+      });
+      mTpl.product.save();
+    });
+  }
+
+  Template['community-header'].events({
+    'click .add-product': addProduct
+  });
+  Template.actions.events({
+    'click .add-product': addProduct
   });
 
   function defaultCreateSearchChoice(term, data) {

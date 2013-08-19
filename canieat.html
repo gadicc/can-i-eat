@@ -63,7 +63,7 @@
 <template name="community-header">
 	<div>{{mf 'community_maintained' 'Community maintained site... get involved!'}} &nbsp;
 	{{#if currentUser}}
-  		<a id="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
+  		<a class="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
   		<a href="/ingredients">{{mf 'edit_ingredients' 'Edit Ingredients'}}</a>
   {{else}}
   	{{mf 'login_to_edit' 'Log in to add/edit products'}}
@@ -116,7 +116,7 @@
 <template name="actions">
 	{{#if currentUser}}
   	<p>
-  		<a id="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
+  		<a class="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
   		<a href="/ingredients">{{mf 'edit_ingredients' 'Edit Ingredients'}}</a>
   	</p>
   {{else}}
