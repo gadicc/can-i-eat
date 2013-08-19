@@ -623,7 +623,16 @@ if (Meteor.isClient) {
       if (!tplName) tplName = 'modalStandard';
       modalData = { tplName: tplName, context: context };
       Session.set('modalData', new Date().getTime());
-      _.defer(function() { $('#' + tplName).modal('show') });
+      _.defer(function() {
+        $('#' + tplName).css({
+          width: 'auto',
+          'margin-left': function () {
+            return -($(this).width() / 2);
+          }
+        });
+        $('#' + tplName).modal('show')
+
+      });
   }
 
   Session.setDefault('QUERY_UPC', '');
