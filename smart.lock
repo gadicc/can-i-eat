@@ -58,8 +58,8 @@
       },
       "headers": {
         "git": "https://github.com/gadicohen/meteor-headers.git",
-        "tag": "v0.0.1",
-        "commit": "230fa9be36743ab3e781130ba1e88e72544e09dc"
+        "tag": "v0.0.2",
+        "commit": "b0a42698a03888a6bd72f3e92b321aa58688e57b"
       },
       "modernizr-meteor": {
         "git": "https://github.com/ckir/modernizr-meteor.git",

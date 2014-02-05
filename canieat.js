@@ -595,14 +595,16 @@ if (Meteor.isClient) {
   }
 
   Meteor.startup(function() {
+    var query = { $and: [ {name:{$not:null}}, {name:{$not:undefined}}, {name:{$not:''}} ] };
     // allCompanies, allIngredients, etc. global vars
     for (key in alls) {
       window[key] = null;
       Deps.autorun((function(key) {
         return function() {
-          var out = [], items = alls[key].collection.find({}, {sort:{name:1}}).fetch();
+          var lang = Session.get('lang');
+          var out = [], items = alls[key].collection.find(query, {sort:{name:1}}).fetch();
           _.each(items, function(item) {
-            out.push( { id: item._id, text: getLang(item, 'name') });
+            out.push( { id: item._id, text: getLang(item, 'name', lang) });
           });
           window[key] = out;
         }
