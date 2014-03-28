@@ -1,0 +1,29 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "dump"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "lib"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "packages"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "pages"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "public"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "server"
+		}
+	]
+}

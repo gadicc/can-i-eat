@@ -3,11 +3,9 @@
     "x-editable-bootstrap": {},
     "select2": {},
     "font-awesome": {},
-    "router": {},
     "handlebar-helpers": {},
-    "messageformat": {
-      "path": "/home/dragon/www/smart/messageformat"
-    },
-    "flag-webicons": {}
+    "messageformat": {},
+    "flag-webicons": {},
+    "iron-router": {}
   }
 }

@@ -1,0 +1,3 @@
+[submodule "packages/dbObj"]
+	path = packages/dbObj
+	url = https://github.com/gadicc/meteor-dbObj.git

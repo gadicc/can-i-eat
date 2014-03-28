@@ -8,8 +8,8 @@ Products.allow({
 });
 
 Products.deny({
-	insert: defaultInsertDeny,
-	update: defaultUpdateDeny
+	insert: baseDb.defaultInsertDeny,
+	update: baseDb.defaultUpdateDeny
 });
 Products.deny({
 	insert: function(user_id, doc) {
@@ -28,7 +28,7 @@ Companies.allow({
 });
 
 Companies.deny({
-	insert: defaultInsertDeny
+	insert: baseDb.defaultInsertDeny
 });
 
 Categories.allow({
@@ -37,7 +37,7 @@ Categories.allow({
 });
 
 Categories.deny({
-	insert: defaultInsertDeny
+	insert: baseDb.defaultInsertDeny
 });
 
 Ingredients.allow({
@@ -46,6 +46,6 @@ Ingredients.allow({
 });
 
 Ingredients.deny({
-	insert: defaultInsertDeny,
-	update: defaultUpdateDeny
+	insert: baseDb.defaultInsertDeny,
+	update: baseDb.defaultUpdateDeny
 });

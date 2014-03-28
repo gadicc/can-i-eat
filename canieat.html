@@ -4,18 +4,20 @@
 </head>
 
 <body>
+</body>
+
+<template name="layout">
 	{{> topDiv}}
 
 	<div id="mainDiv">
-		{{#isolate}}{{renderPage}}{{/isolate}}
+		{{> yield}}
 	</div>
 
   {{> modalPlaceHolder}}
-</body>
+</template>
 
 <template name="topDiv">
 	<div id="topDiv">
-		{{#constant}}
 		<a href="/" class="home">
 			<img src="/favicon.ico">
 			<span>can-eat.it</span>
@@ -23,9 +25,7 @@
 
 		{{> browse}} &nbsp;
 		{{> search}} &nbsp;
-		{{/constant}}
 
-		{{#isolate}}
 		<span id="rules">
 			{{mf 'Rules' 'Rules'}}: &nbsp;
 		  <label>
@@ -33,7 +33,6 @@
 				<span id="vote_7tvioJpLCDagBJzwG_for">✔</span>{{mf 'Vegan' 'Vegan'}}
 			</label>
 		</span>
-		{{/isolate}}
 
 		&nbsp; | &nbsp;
 
@@ -41,7 +40,7 @@
 
   	<div id="topDivRight">
   		{{> langPicker}} |
-	  	{{loginButtons}}
+	  	{{> loginButtons}}
 	  </div>
 	</div>
 </template>
@@ -51,7 +50,7 @@
 </template>
 
 <template name="main">
-		{{> community-header}}
+		{{> communityHeader}}
 		{{> heading}}
 		{{> products}}
 	  <br />
@@ -61,7 +60,7 @@
 	  <!-- bisli bbq 7290000066165 -->
 </template>
 
-<template name="community-header">
+<template name="communityHeader">
 	<div>{{mf 'community_maintained' 'Community maintained site... get involved!'}} &nbsp;
 	{{#if currentUser}}
   		<a class="add-product">{{mf 'add_new_product' 'Add new Product'}}</a> |
@@ -108,8 +107,7 @@
   		<span class="all">{{mf 'show_all' 'Show All'}}</span>
   		<span class="yes">{{mf 'show_yes' 'Only Passes'}}</span>
   		<span class="no">{{mf 'show_no' 'Only Fails'}}</span>
-  	</select>
-	</label>
+  	</span>
 </template>
 
 <template name="actions">
@@ -138,51 +136,11 @@
 
 <template name="app">
 	<h3>{{mf 'heading_Apps' 'Apps'}}</h3>
-	<p>{{mf 'app_download' 'Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to scan
-	product barcodes in the shop and see if you can eat it. Demo:'}}</p>
-	{{#constant}}
+	<p>{{#mf KEY='app_download'}}
+	Download the (very simple) <a href="/canieat.apk">can-i-eat Android app</a> to
+	scan product barcodes in the shop and see if you can eat it. Demo:
+	{{/mf}}</p>
 	<iframe width="420" height="315" src="//www.youtube.com/embed/pM_yGG18u6I" frameborder="0" allowfullscreen></iframe>
-	{{/constant}}
-</template>
-
-<template name="products">
-	<div id="productsDiv">
-		{{#if ready}}
-			{{#if products}}
-				{{#each products}}
-				{{log _id}}
-				<div class="product caneat-{{caneat}} {{show caneat}}" data-id="{{_id}}" data-ts="{{ts}}">
-					<div class="prodImg">
-						<div style="background-image: url({{picURL}});"></div>
-					</div>
-					<div class="status status-{{caneat}}"></div>
-
-					<p><span class="name">{{name}}</span>
-						{{#if currentUser}}
-							<a class="edit">{{mf 'edit' 'edit'}}</a>
-							<a class="edit-trans">{{mf 'trans' 'trans'}}</a>
-						{{/if}}
-					</p>
-					<ul>
-					{{#each caneatMsg}}
-						{{#with this}}
-						<li>
-							{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
-							{{note}}
-							{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
-						</li>
-						{{/with}}
-					{{/each}}
-					</ul>
-				</div>
-				{{/each}}
-			{{else}}
-				<p>No results.</p>
-			{{/if}}
-		{{else}}
-				<p>Loading...</p>
-		{{/if}}
-	</div>
 </template>
 
 <template name="todo">
@@ -194,7 +152,7 @@
 			combinations (e.g. gluten-free vegan food without soya)</li>
 		<li>Subsets, e.g. VEGAN must be MILK-FREE, etc.  Cream can be marked as MILK, not vegan.</li>
 		<li>Allow upload of pictures instead of just using existing URLs</li>
-		<li>Crawling and Open Graph (Facebook preview) support
+		<li>Crawling and Open Graph (Facebook preview) support</li>
 		<li>Offline support (will make app much faster too)</li>
 		<li>REST endpoints for other apps to use the data.  Open source the website.</li>
 		<li>Ads, with 50% of proceeds going to animal charities</li>
@@ -208,11 +166,11 @@
 	<form id="add-product">
 		<table class="editProduct" data-product-id="{{_id}}">
 		<tr><td>Name:</td><td><input type="text" id="add-product-name" value="{{name}}" /></td></tr>
-		<tr><td>Company:</td><td><input type="hidden" id="add-product-company" value="{{company}}" /><td></tr>
-		<tr><td>Categories:</td><td><input type="hidden" id="add-product-categories" value="{{categories}}" /><td></tr>
-		<tr><td>Barcode</td><td><input type="text" id="add-product-barcode" value="{{barcode}}" /><td></tr>
-		<tr><td>PicURL:</td><td><input type="text" id="add-product-picURL" value="{{picURL}}" <td></tr>
-		<tr><td>Ingredients:</td><td><input type="hidden" id="add-product-ingredients" value="{{ingredients}}"/><td></tr>
+		<tr><td>Company:</td><td><input type="hidden" id="add-product-company" value="{{company}}" /></td></tr>
+		<tr><td>Categories:</td><td><input type="hidden" id="add-product-categories" value="{{categories}}" /></td></tr>
+		<tr><td>Barcode</td><td><input type="text" id="add-product-barcode" value="{{barcode}}" /></td></tr>
+		<tr><td>PicURL:</td><td><input type="text" id="add-product-picURL" value="{{picURL}}" /></td></tr>
+		<tr><td>Ingredients:</td><td><input type="hidden" id="add-product-ingredients" value="{{ingredients}}"/></td></tr>
 		{{props}}
 		</table>
 	</form>
@@ -226,11 +184,11 @@
 		{{#with item}}
 		<table class="editProduct" data-product-id="{{_id}}">
 		<tr><td>Name:</td><td><span data-id="name">{{name}}</span></td></tr>
-		<tr><td>Company:</td><td><span data-type="select2" data-value="{{company}}" data-id="company"></span><td></tr>
-		<tr><td>Categories:</td><td><span data-type="select2" data-value="{{categories}}" data-id="categories"></span><td></tr>
-		<tr><td>Barcode</td><td><span data-id="barcode">{{barcode}}</span><td></tr>
-		<tr><td>PicURL:</td><td><span data-id="picURL">{{picURL}}</span><td></tr>
-		<tr><td>Ingredients:</td><td><span data-type="select2" data-value="{{ingredients}}" data-id="ingredients"></span><td></tr>
+		<tr><td>Company:</td><td><span data-type="select2" data-value="{{company}}" data-id="company"></span></td></tr>
+		<tr><td>Categories:</td><td><span data-type="select2" data-value="{{categories}}" data-id="categories"></span></td></tr>
+		<tr><td>Barcode</td><td><span data-id="barcode">{{barcode}}</span></td></tr>
+		<tr><td>PicURL:</td><td><span data-id="picURL">{{picURL}}</span></td></tr>
+		<tr><td>Ingredients:</td><td><span data-type="select2" data-value="{{ingredients}}" data-id="ingredients"></span></td></tr>
 		<tr><td><br /><b><u>Overrides:</u></b></td>
 			<td><br />Only use the below to override the ingredients (e.g. E631 definitely vegan).</td></tr>
 		{{props}}

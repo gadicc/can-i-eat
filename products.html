@@ -1,0 +1,43 @@
+<template name="products">
+	<div id="productsDiv">
+		{{#if ready}}
+			{{#if products}}
+				{{#each products}}
+					{{> product}}
+				{{/each}}
+			{{else}}
+				<p>No results.</p>
+			{{/if}}
+		{{else}}
+				<p>Loading...</p>
+		{{/if}}
+	</div>
+</template>
+
+<template name="product">
+	{{log _id}}
+	<div class="product caneat-{{caneat}} {{show caneat}}" data-id="{{_id}}" data-ts="{{ts}}">
+		<div class="prodImg">
+			<div style="background-image: url({{picURL}});"></div>
+		</div>
+		<div class="status status-{{caneat}}"></div>
+
+		<p><span class="name">{{name}}</span>
+			{{#if currentUser}}
+				<a class="edit">{{mf 'edit' 'edit'}}</a>
+				<a class="edit-trans">{{mf 'trans' 'trans'}}</a>
+			{{/if}}
+		</p>
+		<ul>
+		{{#each caneatMsg}}
+			{{#with this}}
+			<li>
+				{{#if name}}<b>{{name}}</b>{{#if note}}: {{/if}}{{/if}}
+				{{note}}
+				{{#if source}}<a href="{{source}}" target="_blank">(?)</a>{{/if}}
+			</li>
+			{{/with}}
+		{{/each}}
+		</ul>
+	</div>
+</template>
